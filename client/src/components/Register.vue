@@ -28,8 +28,8 @@ export default {
   name: 'Register',
   data () {
     return {
-      email: 'abc',
-      password: '123'
+      email: '',
+      password: ''
     }
   },
   methods: {
