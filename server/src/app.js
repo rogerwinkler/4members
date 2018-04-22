@@ -8,9 +8,9 @@ app.use(morgan('combined')) // use morgan log library to get logs while the serv
 app.use(bodyParser.json())	// parse body of http request
 app.use(cors()) 			// allow access from 3erd party web sites
 
-app.get('/status', function(req, res) {
+app.post('/register', function(req, res) {
 	res.send({
-		message: 'hello world'
+		message: 'Hello '+req.body.email+'! Your user was registered! Have Fun!'
 	})
 })
 
