@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan')
+const config = require('./config/config')
 
 const { Pool, Client } = require('pg')
 
@@ -11,11 +12,7 @@ app.use(morgan('combined')) // use morgan log library to get logs while the serv
 app.use(bodyParser.json())	// parse body of http request
 app.use(cors()) 			// allow access from 3erd party web sites
 
-app.post('/register', function(req, res) {
-	res.send({
-		message: 'Hello '+req.body.email+'! Your user was registered! Have Fun!'
-	})
-})
+require('./routes')(app)
 
 app.get('/db', async function(req, res) {
 	const client = new Client()
@@ -27,4 +24,5 @@ app.get('/db', async function(req, res) {
 	await client.end()
 })
 
-app.listen(process.env.PORT || 8081) 
+app.listen(config.port)
+console.log('Server started on port ' + config.port) 
