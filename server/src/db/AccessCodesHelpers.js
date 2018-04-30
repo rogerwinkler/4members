@@ -1,19 +1,18 @@
 const { Pool } = require('pg')
-const AccessCode = require('../models/AccessCode.js')
+//const AccessCode = require('../models/AccessCode.js')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
-  // METHOD: findByName(name, cb)
-  // Looks up access codes of a given name in the db and
-  // calls the provided callback (cb) with the error and result
-  // objects from the underlying node-postgres call.
-  // PARAMS:
-  // name: Name of access code to look up.
-  // cb:   Callback function called when the db query returns.
+  // METHOD:  async findByName(name) {}
+  //          Looks up an access codes of a given name in the db.
+  // PARAMS:  name: Name of access code to look up.
+  // RETURNS: Returns an array with a single access code object.
+  //          [id, name, dsc, active]
+  //          If a db error occurs an empty array is returned ([]):
   ////////////////////////////////////////////////////////////////////  
  
   async findByName (name) {
-    // console.log('call stack: AccessCodeHelpers.findByName("' + name + '")')
+    // console.log('call stack: AccessCodesHelpers.findByName("' + name + '")')
     const pool = new Pool()
     const text = 'SELECT * FROM access_codes WHERE name=$1'
     const values = [name]
@@ -30,7 +29,7 @@ module.exports = {
   },
 
   // findByName (name, cb) {
-  //   // console.log('call stack: AccessCodeHelpers.findByName("' + name + '")')
+  //   // console.log('call stack: AccessCodesHelpers.findByName("' + name + '")')
   //   const pool = new Pool()
   //   const text = 'SELECT * FROM access_codes WHERE name=$1'
   //   const values = [name]
@@ -42,17 +41,16 @@ module.exports = {
   // },
 
   ////////////////////////////////////////////////////////////////////
-  // METHOD: findById(id, cb)
-  // Looks up access codes of a given id in the db and
-  // calls the provided callback (cb) with the error and result
-  // objects from the underlying node-postgres call.
-  // PARAMS:
-  // id: Id of access code to look up.
-  // cb: Callback function called when the db query returns.
+  // METHOD:  async findById(id) {}
+  //          Looks up access codes of a given id in the db.
+  // PARAMS:  id: Id of access code to look up.
+  // RETURNS: Returns an array with a single access code object.
+  //          [id, name, dsc, active]
+  //          If a db error occurs an empty array is returned ([]):
   ////////////////////////////////////////////////////////////////////  
 
   async findById (id) {
-    // console.log('call stack: AccessCodeHelpers.findById(' + id + ')')
+    // console.log('call stack: AccessCodesHelpers.findById(' + id + ')')
     const pool = new Pool()
     const text = 'SELECT * FROM access_codes WHERE id=$1'
     const values = [id]
@@ -80,22 +78,25 @@ module.exports = {
   //   })
   // },
 
+
   ////////////////////////////////////////////////////////////////////
-  // METHOD: insert(id, name, dsc, active, cb)
-  // Insert an access code into the db and call a callback with the
-  // error and result objects from the underlying node-postgres call.
-  // PARAMS:
-  // id:     Id of access code. If id IS NULL then MAX(id)+1 is taken.                                                 //
-  // name:   Name of access code to be inserted. MUST NOT BE NULL!
-  // dsc:    Description of access code to be inserted.
-  // active: True if record is active, falls if record is inactive.
-  //         If left NULL or UNDEFINED active will be set to true 
-  //         (default).
-  // cb:     Callback function called when the db query returns.
+  // METHOD:  async insert(id, name, dsc, active) {}
+  //          inserts an access code record into the db.
+  // PARAMS:  id:     Id of access code. If id IS NULL then MAX(id)+1 is taken.
+  //          name:   Name of access code to be inserted. MUST BE UNIQUE AND NOT NULL!
+  //          dsc:    Description of access code to be inserted.
+  //          active: True if record is active, false if record is inactive.
+  //                  If left NULL or UNDEFINED active will be set to TRUE BY DEFAULT.
+  // RETURNS: An object with an error object and a rows array containing the inserted row.
+  //          The structure of the returned object is:
+  //          {
+  //            error : { code, msg, dsc},
+  //            rows [{id, name, dsc, active}]
+  //          }
   ////////////////////////////////////////////////////////////////////  
 
   async insert (id, name, dsc, active) {
-    // console.log('call stack: AccessCodeHelpers.insert(' + id + ', "' + name + '", ...)')
+    // console.log('call stack: AccessCodesHelpers.insert(' + id + ', "' + name + '", ...)')
     const pool = new Pool()
     var   text = ''
     var   values = []

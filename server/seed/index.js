@@ -3,44 +3,13 @@
 
 ////////////////////////////////////////////////////////////////
 // Load Access Codes:
-// const access_codes = require('./access_codes.json')
-// const AccessCodeHelpers = require('../src/db/AccessCodeHelpers')
-
-// function insertAccessCode (i) {
-// 	// console.log('call stack: index.insert(' + i + ')')
-// 	if (i >= access_codes.length) {
-// 		// console.log('access_codes.length >= i, return')
-// 		return
-// 	}
-
-// 	AccessCodeHelpers.insert(null, access_codes[i].name, access_codes[i].dsc, true, (err, res) => {
-// 		if (err && err.stack) { // node-postgres error
-// 			console.log(err.stack)
-// 			return
-// 		} else {
-// 			if (err && err.code) { // 4members db error
-// 				console.log('Error ' + err.code + ': ' + err.msg + '.')
-// 			} else {
-// 				console.log('Success: Access code "' + access_codes[i].name + '" inserted.')
-// 			}
-// 			// continue inserting next object, even if 4members db error 1xxx
-// 			// console.log('recursive call i: ' + (parseInt(i)+1).toString())
-// 			insertAccessCode(i+1)
-// 		}
-// 	})
-// }
-
-// insertAccessCode(0)
-
-
-
 const access_codes = require('./access_codes.json')
-const AccessCodeHelpers = require('../src/db/AccessCodeHelpers')
+const AccessCodesHelpers = require('../src/db/AccessCodesHelpers')
 
-async function test () {
+async function loadAcessCodes () {
 	for (i=0; i<access_codes.length; i++) {
 		try {
-			const res = await AccessCodeHelpers.insert(null, access_codes[i].name, access_codes[i].dsc, true)
+			const res = await AccessCodesHelpers.insert(null, access_codes[i].name, access_codes[i].dsc, true)
 			if (res.error) {
 				console.log('Error ' + res.error.code + ': ' + res.error.msg + '.')
 			} else {
@@ -52,4 +21,28 @@ async function test () {
 	}
 }
 
-test()
+loadAcessCodes()
+
+
+////////////////////////////////////////////////////////////////
+// Load Roles:
+const roles = require('./roles.json')
+const RolesHelpers = require('../src/db/RolesHelpers')
+
+async function loadRoles () {
+	for (i=0; i<roles.length; i++) {
+		try {
+			const res = await RolesHelpers.insert(null, roles[i].name, roles[i].dsc, true)
+			if (res.error) {
+				console.log('Error ' + res.error.code + ': ' + res.error.msg + '.')
+			} else {
+				console.log('Success: Role "' + access_codes[i].name + '" inserted.')
+			}
+		} catch(e) {
+			console.log(e.stack)
+		}
+	}
+}
+
+loadAcessCodes()
+

@@ -2,7 +2,7 @@ drop table roles cascade;
 create table roles 
 (
 	id		integer primary key,
-	name	text unique,
+	name	text unique not null,
 	dsc		text,
 	active	boolean
 );
