@@ -3,12 +3,17 @@ const { Pool } = require('pg')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
+  // =================================================================  
   // METHOD:  async findByName(name) {}
+  // =================================================================  
   //          Looks up an access codes of a given name in the db.
+  // -----------------------------------------------------------------
   // PARAMS:  name: Name of access code to look up.
+  // -----------------------------------------------------------------
   // RETURNS: Returns an array with a single access code object.
   //          [id, name, dsc, active]
   //          If a db error occurs an empty array is returned ([]):
+  // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
  
   async findByName (name) {
@@ -41,12 +46,17 @@ module.exports = {
   // },
 
   ////////////////////////////////////////////////////////////////////
+  // =================================================================  
   // METHOD:  async findById(id) {}
+  // =================================================================  
   //          Looks up access codes of a given id in the db.
+  // -----------------------------------------------------------------
   // PARAMS:  id: Id of access code to look up.
+  // -----------------------------------------------------------------
   // RETURNS: Returns an array with a single access code object.
   //          [id, name, dsc, active]
   //          If a db error occurs an empty array is returned ([]):
+  // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
   async findById (id) {
@@ -67,7 +77,7 @@ module.exports = {
   },
 
   // findById (id, cb) {
-  //   // console.log('call stack: AccessCodeHelpers.findById(' + id + ')')
+  //   // console.log('call stack: AccessCodesHelpers.findById(' + id + ')')
   //   const pool = new Pool()
   //   const text = 'SELECT * FROM access_codes WHERE id=$1'
   //   const values = [id]
@@ -80,7 +90,9 @@ module.exports = {
 
 
   ////////////////////////////////////////////////////////////////////
+  // =================================================================  
   // METHOD:  async insert(id, name, dsc, active) {}
+  // =================================================================  
   //          inserts an access code record into the db.
   // PARAMS:  id:     Id of access code. If id IS NULL then MAX(id)+1 is taken.
   //          name:   Name of access code to be inserted. MUST BE UNIQUE AND NOT NULL!
@@ -167,7 +179,7 @@ module.exports = {
   },
   
   // insert (id, name, dsc, active, cb) {
-  //   // console.log('call stack: AccessCodeHelpers.insert(' + id + ', "' + name + '", ...)')
+  //   // console.log('call stack: AccessCodesHelpers.insert(' + id + ', "' + name + '", ...)')
   //   const pool = new Pool()
   //   var   text = ''
   //   var   values = []
