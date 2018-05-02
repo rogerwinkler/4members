@@ -1,3 +1,4 @@
+const testAccessCodesHelpers = require('./testAccessCodesHelpers')
 const testRolesHelpers = require('./testRolesHelpers')
 
 
@@ -6,7 +7,7 @@ const testRolesHelpers = require('./testRolesHelpers')
 ////////////////////////////////////////////////////////////////////
 {
 	(async () => {
-		// await testAcessCodesHelpers()
+		await testAccessCodesHelpers.test()
 		await testRolesHelpers.test()
 	})().catch(e => console.error(e.stack))
 }

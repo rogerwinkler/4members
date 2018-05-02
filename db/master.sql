@@ -5,3 +5,4 @@
 \i ct_roles.sql
 \i ct_roles_access_codes.sql
 \i ct_users.sql
+\i ct_users_roles.sql

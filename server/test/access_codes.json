@@ -1,14 +1,14 @@
 [
 	{
-		"name": "admin",
-		"dsc" : "can create/enable/disable users and their privileges"
+		"name": "testadmin",
+		"dsc" : "test description of testadmin"
 	},
 	{
-		"name": "superuser",
-		"dsc" : "can create/update/delete code tables and customization parameters"
+		"name": "testsuperuser",
+		"dsc" : "test description of testsuperuser"
 	},
 	{
-		"name": "user",
-		"dsc" : "regular user of the application"
+		"name": "testuser",
+		"dsc" : "test description of testuser"
 	}
 ]

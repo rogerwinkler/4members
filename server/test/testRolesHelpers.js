@@ -147,6 +147,56 @@ async function test_updateDsc() {
   console.log('. *** END **** updateDsc() test roles...')
 }
 
+// test activate()
+// testIDs[] and test records are expected to be there
+// no change to testIDs[]
+async function test_activate() {
+  console.log('. *** START *** activate() test roles...')
+  for (var i=0; i<testIDs.length; i++) {
+    try {
+        const rows = await RolesHelpers.findById(testIDs[i])
+        if (rows.length>0) { 
+          console.log('.. role found: id=' + rows[0].id + ', name="' + rows[0].name + '", dsc="' + rows[0].dsc + '", active=' + rows[0].active)
+          const res = await RolesHelpers.activate(rows[0].id)
+          if (res.error) {
+          console.log('.. ERROR on activate(), ' + res.error.code + ', ' + res.error.msg)
+          } else {
+            console.log('.. role activated: id=' + res.rows[0].id + ', name="' + res.rows[0].name + '", dsc="' + res.rows[0].dsc + '", active=' + res.rows[0].active)
+          }
+      }
+    } catch(e) {
+      console.log(e.stack)
+    }
+  }
+  console.log('. *** END **** activate() test roles...')
+}
+
+// test inactivate()
+// testIDs[] and test records are expected to be there
+// no change to testIDs[]
+async function test_inactivate() {
+  console.log('. *** START *** inactivate() test roles...')
+  for (var i=0; i<testIDs.length; i++) {
+    try {
+        const rows = await RolesHelpers.findById(testIDs[i])
+        if (rows.length>0) { 
+          console.log('.. role found: id=' + rows[0].id + ', name="' + rows[0].name + '", dsc="' + rows[0].dsc + '", active=' + rows[0].active)
+          const res = await RolesHelpers.inactivate(rows[0].id)
+          if (res.error) {
+          console.log('.. ERROR on inactivate(), ' + res.error.code + ', ' + res.error.msg)
+          } else {
+            console.log('.. role inactivated: id=' + res.rows[0].id + ', name="' + res.rows[0].name + '", dsc="' + res.rows[0].dsc + '", active=' + res.rows[0].active)
+          }
+      }
+    } catch(e) {
+      console.log(e.stack)
+    }
+  }
+  console.log('. *** END **** inactivate() test roles...')
+}
+
+
+
 module.exports = {
   async test () {
     console.log('START TEST ***** RolesHelpers (roles) *****')
@@ -163,6 +213,8 @@ module.exports = {
     await test_updateDsc()
     await test_delete()
     await test_insert()
+    await test_inactivate()
+    await test_activate()
     console.log('END  TEST ***** RolesHelpers (roles) *****')   
   } 
 }

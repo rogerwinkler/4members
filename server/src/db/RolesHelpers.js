@@ -330,17 +330,6 @@ module.exports = {
     }
   },
 
-
-
-
-
-
-  async insertOrUpdate (id, name, dsc, active) {
-
-  },
-
-  //------------------------------------------------------//
-
   ////////////////////////////////////////////////////////////////////
   // =================================================================  
   // METHOD:  async delete(id) {}
@@ -353,7 +342,9 @@ module.exports = {
   //          array if no record was deleted: [{id, name, dsc, active}] 
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
+
   async delete (id) {
+    // console.log('call stack: RolesHelpers.delete(' + id + ')')
     const pool = new Pool()
     var   text = 'DELETE FROM roles WHERE id=$1 RETURNING *'
     var   values = [id]
@@ -368,14 +359,75 @@ module.exports = {
     }
   },
 
+  ////////////////////////////////////////////////////////////////////
+  // =================================================================  
+  // METHOD:  async activate(id) {}
+  // =================================================================  
+  //          activates (set active=true) the role with the given id.
+  // -----------------------------------------------------------------
+  // PARAMS:  id:     Id of record to be activated.
+  // -----------------------------------------------------------------
+  // RETURNS: Returns an error object and the updated record. If no 
+  //          error occured, the error object is null. If an error
+  //          occured, the returned rows object is null.
+  //          
+  //          The structure of the returned object is:
+  //          {
+  //            error : { code, msg, dsc},
+  //            rows [{id, name, dsc, active}]
+  //          }
+  // -----------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////  
   
-  //------------------------------------------------------//
-
   async activate (id) {
+    // console.log('call stack: RolesHelpers.activate(' + id + ')')
+    const pool = new Pool()
+    var text = 'UPDATE roles SET active=true WHERE id=$1 RETURNING *'
+    var values = [id]
 
+    try {
+      const { rows } = await pool.query(text, values)
+      return {'error': null, 'rows': rows}
+    } catch(e) {
+      throw e
+    } finally {
+      pool.end()
+    }
   },
 
+  ////////////////////////////////////////////////////////////////////
+  // =================================================================  
+  // METHOD:  async inactivate(id) {}
+  // =================================================================  
+  //          inactivates (set active=false) the role with the given id.
+  // -----------------------------------------------------------------
+  // PARAMS:  id:     Id of record to be inactivated.
+  // -----------------------------------------------------------------
+  // RETURNS: Returns an error object and the updated record. If no 
+  //          error occured, the error object is null. If an error
+  //          occured, the returned rows object is null.
+  //          
+  //          The structure of the returned object is:
+  //          {
+  //            error : { code, msg, dsc},
+  //            rows [{id, name, dsc, active}]
+  //          }
+  // -----------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////  
+  
   async inactivate (id) {
+    // console.log('call stack: RolesHelpers.inactivate(' + id + ')')
+    const pool = new Pool()
+    var text = 'UPDATE roles SET active=false WHERE id=$1 RETURNING *'
+    var values = [id]
 
+    try {
+      const { rows } = await pool.query(text, values)
+      return {'error': null, 'rows': rows}
+    } catch(e) {
+      throw e
+    } finally {
+      pool.end()
+    }
   }
 }
