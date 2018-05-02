@@ -60,14 +60,36 @@ from the following lines depending on the operating system you're using:
     ```
  
     You can set them globally in `/etc/environment`.
-    
-9. Create the database and database objects. Go to the `db` directory and
-run the `ct_db_4members.sql` script:
- 
-8. Install brianc's node-postgres, a PostgreSQL client for Node:
+
+10. Create file `.pgpwd` in directory `db` and put your password there in the
+following format:
+
+    ```
+    localhost:5432:postgres:postgres:yoursecretpassword
+    localhost:5432:4members:4members:yoursecretpassword
+    ```
+
+11. Create the database and database objects. Go to the `db` directory and
+run the `ct_db_4members.sh` script:
+
+    ```
+    bash ct_db_4members.sh
+    ```
+
+12. Install brianc's node-postgres, a PostgreSQL client for Node:
  
     ```
     npm install --save pg
     ```
  
+13. Start the server by entering `npm start` in the `server` directory.
 
+14. Start the client by entering `npm run dev` in the `client` directory.
+
+15. Start the app in your browser, depending on where it is located:
+
+    ```
+    http://localhost:8080/
+    ```
+## License
+MIT
