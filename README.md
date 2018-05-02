@@ -65,10 +65,10 @@ from the following lines depending on the operating system you're using:
 following format:
 
     ```
-    localhost:5432:postgres:postgres:yoursecretpassword
+    localhost:5432:postgres:postgres:yoursecretpassword
     localhost:5432:4members:4members:yoursecretpassword
     ```
-
+    
 11. Create the database and database objects. Go to the `db` directory and
 run the `ct_db_4members.sh` script:
 
