@@ -27,18 +27,18 @@ from the cloud.
 5. Since node modules are not included in the repository, you have to `npm install` the
 dependencies from `package.json`. Change to the client directory and enter `npm install':
 
-    ```
+    ```
     cd client
     npm install
-    ```
+    ```
     
 6. Do the same in the server directory:
 
-    ```
+    ```
     cd ..
     cd server
     npm install
-    ```
+    ```
  
  7. Install PostgreSQL
  
