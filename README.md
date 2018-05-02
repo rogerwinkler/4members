@@ -4,6 +4,7 @@ from the cloud.
 
 ## Setup
 1. Download and install Node.js from https://nodejs.org/en/download/.
+
 2. npm is automatically installed with Node. To check if you have Node.js installed, 
     run this command in your terminal:
     
@@ -18,6 +19,7 @@ from the cloud.
     ```
 
 3. In your terminal change to the directory in which you want to install 4members. 
+
 4. Clone the project from GitHub:
 
     ```
@@ -46,9 +48,19 @@ administrate PostgreSQL, from https://www.postgresql.org.
 8. Run `pgAdmin 4` (or newer) and create a new Login/Group Role *4members* and 
 remember the password, you'll need it in the next step.
 
-9. 
+9. Set environment variables for the database connection. This may deviate
+from the following lines depending on the operating system you're using:
 
+    ```
+    export PGHOST="database.server.com"
+    export PGUSER="4members"
+    export PGDATABASE="4members"
+    export PGPASSWORD="secretpassword"
+    export PGPORT=5432
+    ```
  
+    You can set them globally in `/etc/environment`.
+    
 9. Create the database and database objects. Go to the `db` directory and
 run the `ct_db_4members.sql` script:
  
