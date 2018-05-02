@@ -3,7 +3,7 @@ An open-source membership management solution for clubs and associations, design
 from the cloud.
 
 ## Setup
-1. Download and install Node.js: https://nodejs.org/en/download/
+1. Download and install Node.js from https://nodejs.org/en/download/.
 2. npm is automatically installed with Node. To check if you have Node.js installed, 
     run this command in your terminal:
     
@@ -40,8 +40,22 @@ dependencies from `package.json`. Change to the client directory and enter `npm 
     npm install
     ```
  
- 7. Install PostgreSQL
+7. Download and install PostgreSQL and pgAdmin 4 (or newer), which is used to 
+administrate PostgreSQL, from https://www.postgresql.org.
+
+8. Run `pgAdmin 4` (or newer) and create a new Login/Group Role *4members* and 
+remember the password, you'll need it in the next step.
+
+9. 
+
  
- 8. Install node-postgres
+9. Create the database and database objects. Go to the `db` directory and
+run the `ct_db_4members.sql` script:
  
- 9. Create the database and database objects 
+8. Install brianc's node-postgres, a PostgreSQL client for Node:
+ 
+    ```
+    npm install --save pg
+    ```
+ 
+
