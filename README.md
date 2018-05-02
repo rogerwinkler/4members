@@ -51,15 +51,15 @@ remember the password, you'll need it in the next step.
 9. Set environment variables for the database connection. This may deviate
 from the following lines depending on the operating system you're using:
 
-```
-export PGHOST="database.server.com"
-export PGUSER="4members"
-export PGDATABASE="4members"
-export PGPASSWORD="secretpassword"
-export PGPORT=5432
-```
+    ```
+    export PGHOST="database.server.com"
+    export PGUSER="4members"
+    export PGDATABASE="4members"
+    export PGPASSWORD="secretpassword"
+    export PGPORT=5432
+    ```
 
-You can set them globally in `/etc/environment`.
+    You can set them globally in `/etc/environment`.
 
 10. Create file `.pgpwd` in directory `db` and put your password there in the
 following format:
