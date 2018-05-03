@@ -87,18 +87,18 @@ run the `ct_db_4members.sh` script:
 
 13. Start the server by entering `npm start` in the `server` directory.
 
-    ```
-    cd server
-    npm start
-    ```
+```
+cd server
+npm start
+```
 
 14. Start the client by entering `npm run dev` (for a development environment)
 in the `client` directory.
 
-    ```
-    cd client
-    npm run dev
-    ```
+```
+cd client
+npm run dev
+```
 
 15. Start the app in your browser, depending on where it is located:
 
