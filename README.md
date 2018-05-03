@@ -27,7 +27,7 @@ from the cloud.
     ```
     
 5. Since node modules are not included in the repository, you have to `npm install` the
-dependencies from `package.json`. Change to the client directory and enter `npm install':
+dependencies from `package.json`. Change to the client directory and enter `npm install`:
 
     ```
     cd client
