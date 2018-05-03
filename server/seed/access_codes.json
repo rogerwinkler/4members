@@ -1,14 +1,20 @@
 [
 	{
-		"name": "admin",
-		"dsc" : "can create/enable/disable users and their privileges"
+		"id"     : 1,
+		"name"   : "admin",
+		"dsc"    : "can create/enable/disable users and their privileges",
+		"active" : true
 	},
 	{
-		"name": "superuser",
-		"dsc" : "can create/update/delete code tables and customization parameters"
+		"id"     : 2,
+		"name"   : "superuser",
+		"dsc"    : "can create/update/delete code tables and customization parameters",
+		"active" : true
 	},
 	{
-		"name": "user",
-		"dsc" : "regular user of the application"
+		"id"     : 3,
+		"name"   : "user",
+		"dsc"    : "regular user of the application",
+		"active" : true
 	}
 ]
