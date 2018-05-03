@@ -42,14 +42,14 @@ dependencies from `package.json`. Change to the client directory and enter `npm 
     npm install
     ```
  
-7. Download and install PostgreSQL and pgAdmin 4 (or newer), which is used to 
-administrate PostgreSQL, from https://www.postgresql.org.
+7. Download and install PostgreSQL and pgAdmin 4 (or newer) from https://www.postgresql.org.
+pgAdmin 4 is used to administrate PostgreSQL.
 
 8. Run `pgAdmin 4` (or newer) and create a new Login/Group Role *4members* and 
-remember the password, you'll need it in the next step.
+remember the passwords, you'll need them in step 10.
 
 9. Set environment variables for the database connection. This may deviate
-from the following lines depending on the operating system you're using:
+from the following lines depending on the operating system and installation you're using:
 
     ```
     export PGHOST="database.server.com"
@@ -61,7 +61,7 @@ from the following lines depending on the operating system you're using:
 
     Or set them globally in `/etc/environment`, but then without the `export` keyword.
 
-10. Create file `.pgpwd` in directory `db` and put your password there in the
+10. Create file `.pgpwd` in directory `db` and put your passwords there in the
 following format:
 
     ```
@@ -69,7 +69,7 @@ following format:
     localhost:5432:4members:4members:yoursecretpassword
     ```
 
-11. Create the database and database objects. Go to the `db` directory and
+11. To create the database and database objects, go to the `db` directory and
 run the `ct_db_4members.sh` script:
 
     ```
@@ -82,9 +82,23 @@ run the `ct_db_4members.sh` script:
      npm install --save pg
      ```
 
+    Brian has also set up a wonderful documentation site for node-postgres.
+    Check it out at https://node-postgres.com/.
+
 13. Start the server by entering `npm start` in the `server` directory.
 
-14. Start the client by entering `npm run dev` in the `client` directory.
+    ```
+    cd server
+    npm start
+    ```
+
+14. Start the client by entering `npm run dev` (for a development environment)
+in the `client` directory.
+
+    ```
+    cd client
+    npm run dev
+    ```
 
 15. Start the app in your browser, depending on where it is located:
 
