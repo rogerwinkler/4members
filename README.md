@@ -2,7 +2,7 @@
 _**NOTE**: This project is still in an early state. As to date it can be downloaded and used for
 development, experimentation or study of any kind, but it is still **far from a productive environment**.
 If you're interested in our open source membership management solution, please come back regularly and
-check out on the status of the project. We hope to have something up and running productive soon. Or drop
+check out the status of the project. We hope to have something up and running productively soon. Or drop
 a message, we'd like to come back to you as the project progresses._
 
 4members is an open-source membership management solution for clubs and associations, designed to be serviced
