@@ -4,7 +4,7 @@ from the cloud.
 
 _**NOTE**: This project is still in an early state. As to date it can be downloaded and used for
 development, experimentation or study of any kind, but it is still **far from a productive environment**.
-If you're interested in our open source membership management solution, please come back regularly and
+But if you're looking for an open source membership management solution, please come back regularly and
 check out the status of the project. We hope to have something up and running productively soon. Or drop
 a message, we'd like to come back to you as the project progresses._
 
