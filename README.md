@@ -1,12 +1,15 @@
 # 4members
+4members is an open-source membership management solution for clubs and associations, designed to be serviced
+from the cloud.
+
 _**NOTE**: This project is still in an early state. As to date it can be downloaded and used for
 development, experimentation or study of any kind, but it is still **far from a productive environment**.
 If you're interested in our open source membership management solution, please come back regularly and
 check out the status of the project. We hope to have something up and running productively soon. Or drop
 a message, we'd like to come back to you as the project progresses._
 
-4members is an open-source membership management solution for clubs and associations, designed to be serviced
-from the cloud.
+**If you have any feedback or requirements for the solution, there is still plenty of room for changes,
+drop a note. Thanks!**
 
 ## Setup
 1. Download and install Node.js from https://nodejs.org/en/download/.
