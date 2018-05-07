@@ -115,6 +115,21 @@ in the `client` directory.
     http://localhost:8080/
     ```
 
+## Credits
+We would like to thank all of the generous people on the web that provide
+insight and inspiration through their donations of code, documentation and 
+instructions. They are so many, 
+we can not thank each and everyone individually. But we would like to name
+a few of the people and resources they provide on the web, that have directly 
+influenced this project:
+
+- Cody Seibert: Full Stack Web App using Vue.js & Express.js (https://www.youtube.com/watch?v=Fa4cRMaTDUI&list=PLWKjhJtqVAbnadueQ-C5keMQQiQau_i0D).
+- Vinay Sahni: Best Practices for Designing a Pragmatic RESTful API (https://www.vinaysahni.com/best-practices-for-a-pragmatic-restful-api).
+- Dominik Kundel: Working with Environment Variables in Node.js (https://www.twilio.com/blog/2017/08/working-with-environment-variables-in-node-js.html).
+- Michael Herman: Testing Node and Express (http://mherman.org/blog/2016/09/12/testing-node-and-express/#.Wu_ZO9NuajR).
+- Gary Simon of coursetro.com: The Vue Tutorial for 2018 - Learn Vue 2 in 65 Minutes (https://www.youtube.com/watch?v=78tNYZUS-ps)
+
+
 ## MIT License
 
 Copyright (c) 2018 rogerwinkler
