@@ -6,7 +6,7 @@
   "scripts": {
     "start": "./node_modules/nodemon/bin/nodemon.js src/app.js",
     "lint": "./node_modules/.bin/eslint **/*.js",
-    "test": "node ./test",
+    "test": "./node_modules/mocha/bin/_mocha",
     "seed": "node ./seed"
   },
   "keywords": [],
@@ -15,10 +15,14 @@
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
     "cors": "^2.8.4",
+    "debug": "^3.1.0",
     "express": "^4.16.3",
     "joi": "^13.2.0",
     "jsonwebtoken": "^8.2.1",
+    "mocha": "^5.1.1",
     "morgan": "^1.9.0",
     "pg": "^7.4.1"
   },

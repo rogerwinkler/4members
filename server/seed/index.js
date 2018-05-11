@@ -40,7 +40,7 @@ const RolesHelpers = require('../src/db/RolesHelpers')
 async function loadRoles () {
 	for (var i=0; i<roles.length; i++) {
 		try {
-			const res = await RolesHelpers.insert(null, roles[i].name, roles[i].dsc, true)
+			const res = await RolesHelpers.insert(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
 			if (res.error) {
 				console.log('Error ' + res.error.code + ': ' + res.error.msg + '.')
 			} else {
@@ -57,6 +57,6 @@ async function loadRoles () {
 // MAIN FUNCTION RUNNING ALL OF THE LOADING FUNCTIONS ABOVE....
 ////////////////////////////////////////////////////////////////////
 (async () => {
-	await loadAcessCodes()
+	// await loadAcessCodes()
 	await loadRoles()
 })().catch(e => console.error(e.stack))

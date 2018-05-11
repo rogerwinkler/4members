@@ -1,8 +1,11 @@
 const { Pool } = require('pg')
 const ac = require('../models/AccessCode')
+const debug = require('debug')('AccessCodeController')
+const debugCreate = require('debug')('AccessCodeController.create')
 
 module.exports = {
 	async create (req, res) {
+		debugCreate('req:', req)
 		const pool = new Pool()
 		await pool.connect()
 
@@ -46,7 +49,7 @@ module.exports = {
 		  	const result = await pool.query(text, values)
 		  	// console.log(result.rows[0])
 			res.send({
-				accessCode: result.rows[0],
+				accessCode: result.rows[0]
 			})
 		} catch(err) {
 			console.log(err.stack)
