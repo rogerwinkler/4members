@@ -121,7 +121,19 @@ in the `client` directory.
     ```
     http://localhost:8080/
     ```
-    
+
+16. Further Reading
+
+Check out the documentation on the [wiki](https://github.com/rogerwinkler/4members/wiki). The page
+[Software Architecture](https://github.com/rogerwinkler/4members/wiki/Software-Architecture) is a 
+manifesto and gives an overview of the key design and concept. 
+[Functionality](https://github.com/rogerwinkler/4members/wiki/Functionality) will tell you what's 
+inside. [Standard Procedures](https://github.com/rogerwinkler/4members/wiki/Standard-Procedures) 
+and [Check Lists](https://github.com/rogerwinkler/4members/wiki/Check-Lists) are more
+suited for developers and the development process. 
+[Error Codes](https://github.com/rogerwinkler/4members/wiki/Error-Codes) and 
+[Glossary](https://github.com/rogerwinkler/4members/wiki/Glossary) hopefully do what you'd expect 
+them to do.
 
 ## Credits
 We would like to thank all of the generous people on the web that provide
