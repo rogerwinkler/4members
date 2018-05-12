@@ -113,8 +113,15 @@ in the `client` directory.
 15. Start the app in your browser, depending on where it is located:
 
     ```
+    http://your.servers.location:port/
+    ```
+
+    For local development for example, this would be:
+
+    ```
     http://localhost:8080/
     ```
+    
 
 ## Credits
 We would like to thank all of the generous people on the web that provide
