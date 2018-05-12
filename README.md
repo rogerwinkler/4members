@@ -124,7 +124,7 @@ in the `client` directory.
 
 ## Further Reading
 
-Check out the documentation on the [wiki](https://github.com/rogerwinkler/4members/wiki). The page
+Check out the [wiki](https://github.com/rogerwinkler/4members/wiki) pages. The page
 [Software Architecture](https://github.com/rogerwinkler/4members/wiki/Software-Architecture) is a 
 manifesto and gives an overview of the key design and concept. 
 [Functionality](https://github.com/rogerwinkler/4members/wiki/Functionality) will tell you what's 
