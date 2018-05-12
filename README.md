@@ -122,7 +122,7 @@ in the `client` directory.
     http://localhost:8080/
     ```
 
-16. Further Reading
+## Further Reading
 
 Check out the documentation on the [wiki](https://github.com/rogerwinkler/4members/wiki). The page
 [Software Architecture](https://github.com/rogerwinkler/4members/wiki/Software-Architecture) is a 
