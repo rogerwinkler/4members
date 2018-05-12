@@ -58,7 +58,8 @@ pgAdmin 4 is used to administrate PostgreSQL.
 remember the passwords, you'll need them in step 10.
 
 9. Set environment variables for the database connection. This may deviate
-from the following lines depending on the operating system and installation you're using:
+from the following lines depending on the operating system and installation you're using. 
+Or you may set them globally in `/etc/environment`, but then without the `export` keyword:
 
     ```
     export PGHOST="database.server.com"
@@ -68,9 +69,7 @@ from the following lines depending on the operating system and installation you'
     export PGPORT=5432
     ```
 
-    Or set them globally in `/etc/environment`, but then without the `export` keyword.
-
-&nbsp;&nbsp;&nbsp;&nbsp;>_**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded to the repository._
+    _**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded to the repository._
 
 10. Create file `.pgpwd` in directory `db` and put your passwords there in the
 following format:
