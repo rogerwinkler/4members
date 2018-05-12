@@ -70,7 +70,7 @@ from the following lines depending on the operating system and installation you'
 
     Or set them globally in `/etc/environment`, but then without the `export` keyword.
 
-    _**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded
+>   _**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded
     to the repository._
 
 10. Create file `.pgpwd` in directory `db` and put your passwords there in the
