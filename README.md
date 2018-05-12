@@ -69,8 +69,6 @@ Or you may set them globally in `/etc/environment`, but then without the `export
     export PGPORT=5432
     ```
 
-    _**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded to the repository._
-
 10. Create file `.pgpwd` in directory `db` and put your passwords there in the
 following format:
 
@@ -78,6 +76,8 @@ following format:
     localhost:5432:postgres:postgres:yoursecretpassword
     localhost:5432:4members:4members:yoursecretpassword
     ```
+
+    _**Note**: Put `.pgpwd` in your `.gitignore` so that your db credentials are not uploaded to the repository._
 
 11. To create the database and database objects, go to the `db` directory and
 run the `ct_db_4members.sh` script:
