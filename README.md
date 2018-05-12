@@ -131,7 +131,7 @@ manifesto and gives an overview of the key design and concept.
 inside. [Standard Procedures](https://github.com/rogerwinkler/4members/wiki/Standard-Procedures) 
 and [Check Lists](https://github.com/rogerwinkler/4members/wiki/Check-Lists) are more
 suited for developers and the development process. 
-[Error Codes](https://github.com/rogerwinkler/4members/wiki/Error-Codes) and 
+[Error Codes](https://github.com/rogerwinkler/4members/wiki/Error-Codes) and the 
 [Glossary](https://github.com/rogerwinkler/4members/wiki/Glossary) hopefully do what you'd expect 
 them to do.
 
