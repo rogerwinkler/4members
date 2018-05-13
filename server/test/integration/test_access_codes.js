@@ -1,16 +1,16 @@
 process.env.NODE_ENV = 'test'
 
-const seed_roles = require('../../seed/seed_roles')
+const seed_access_codes = require('../../seed/seed_access_codes')
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const server = require('../../src/app');
 
-describe('routes : /api/v0.01/roles', function() {
+describe('routes : /api/v0.01/access_codes', function() {
 
   beforeEach( async function() {
-    await seed_roles.loadRoles();
+    await seed_access_codes.loadAccessCodes();
     // done();
   });
 
@@ -20,10 +20,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // getAll
-  describe('GET /api/v0.01/roles', () => {
-    it('should respond with all roles', (done) => {
+  describe('GET /api/v0.01/access_codes', () => {
+    it('should respond with all access_codes', (done) => {
       chai.request(server)
-      .get('/api/v0.01/roles')
+      .get('/api/v0.01/access_codes')
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -35,7 +35,7 @@ describe('routes : /api/v0.01/roles', function() {
         // key-value pair of {"status": "success"}
         res.body.status.should.eql('success');
         // the JSON response body should have a
-        // key-value pair of {"data": [3 role objects]}
+        // key-value pair of {"data": [3 objects]}
         res.body.data.length.should.eql(3);
         // the first object in the data array should
         // have the right keys
@@ -50,10 +50,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // get(id)
-  describe('GET /api/v0.01/roles/:id', () => {
-    it('should respond with a single role', (done) => {
+  describe('GET /api/v0.01/access_codes/:id', () => {
+    it('should respond with a single access code', (done) => {
       chai.request(server)
-      .get('/api/v0.01/roles/1')
+      .get('/api/v0.01/access_codes/1')
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -75,9 +75,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role id is null', (done) => {
+    it('should throw an error if the access code id is null', (done) => {
       chai.request(server)
-      .get(`/api/v0.01/roles/${null}`)
+      .get(`/api/v0.01/access_codes/${null}`)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -89,9 +89,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role is not found', (done) => {
+    it('should throw an error if the access code is not found', (done) => {
       chai.request(server)
-      .get(`/api/v0.01/roles/4`)
+      .get(`/api/v0.01/access_codes/4`)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -99,7 +99,7 @@ describe('routes : /api/v0.01/roles', function() {
         // key-value pair of {"status": "error"}
         res.body.status.should.eql('error');
         // there should be an error message
-        res.body.message.should.eql('Role not found');
+        res.body.message.should.eql('Access code not found');
         done();
       });
     });
@@ -108,10 +108,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // insert(id, name, dsc, active)
-  describe('POST /api/v0.01/roles', () => {
-    it('should respond with a success message along with a single role that was added', (done) => {
+  describe('POST /api/v0.01/access_codes', () => {
+    it('should respond with a success message along with a single access code that was added', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         id     : 4,
         name   : 'someTestAdmin',
@@ -139,7 +139,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should generate id automatically when not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         name   : 'someOtherTestAdmin',
         dsc    : 'just used for testing',
@@ -168,7 +168,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should set active to true (default) if not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         id     : 6,
         name   : 'stillAnotherTestAdmin',
@@ -195,9 +195,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role already exists', (done) => {
+    it('should throw an error if the access code already exists', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         id     : 1,
         name   : 'someTestAdmin',
@@ -217,7 +217,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should throw an error if name is not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         id     : 7,
         dsc    : 'just used for testing',
@@ -236,7 +236,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should throw an error if wrong property is provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/access_codes')
       .send({
         hugo   : 7,
         dsc    : 'just used for testing',
@@ -258,10 +258,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // update(id, name, dsc, active)
-  describe('PUT /api/v0.01/roles/1', () => {
-    it('should respond with a success message along with a single role that was updated', (done) => {
+  describe('PUT /api/v0.01/access_codes/1', () => {
+    it('should respond with a success message along with a single access code that was updated', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -294,9 +294,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s name and just role\'s name', (done) => {
+    it('should change access code\'s name and just access code\'s name', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name   : 'someOtherTestAdmin'
       })
@@ -322,9 +322,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s description and just role\'s description', (done) => {
+    it('should change access code\'s description and just access code\'s description', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         dsc : 'some other description'
       })
@@ -350,9 +350,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s property active and just role\'s property active', (done) => {
+    it('should change access code\'s property active and just access code\'s property active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         active : false
       })
@@ -378,9 +378,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s properties dsc and active', (done) => {
+    it('should change access code\'s properties dsc and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         dsc    : 'some description',
         active : false
@@ -407,9 +407,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s properties name and active', (done) => {
+    it('should change access code\'s properties name and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name   : 'someNewName',
         active : false
@@ -436,9 +436,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s properties name and dsc', (done) => {
+    it('should change access code\'s properties name and dsc', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name : 'someNewName',
         dsc  : 'some new description'
@@ -465,9 +465,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should change role\'s properties name, dsc and active', (done) => {
+    it('should change access code\'s properties name, dsc and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name   : 'someNewName',
         dsc    : 'some new description',
@@ -495,9 +495,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role does not exist', (done) => {
+    it('should throw an error if the access code does not exist', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/4')
+      .put('/api/v0.01/access_codes/4')
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -509,14 +509,14 @@ describe('routes : /api/v0.01/roles', function() {
         // the JSON response body should have a
         // key-value pair of {"status": "error"}
         res.body.status.should.equal('error');
-        // there should be an error message 'Role of id xxxx not found'
-        res.body.message.should.include('Role of id', 'not found');
+        // there should be an error message 'Access code of id xxxx not found'
+        res.body.message.should.include('Access code of id', 'not found');
         done();
       });
     });
     it('should throw an error if no param :id is provided', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles')
+      .put('/api/v0.01/access_codes')
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -535,7 +535,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should throw an error if no properties provided', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({})
       .end((err, res) => {
         // there should be a 404 status code
@@ -550,7 +550,7 @@ describe('routes : /api/v0.01/roles', function() {
     });
     it('should throw an error if name is null', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/access_codes/1')
       .send({
         name: null
       })
@@ -569,10 +569,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // deleteAll
-  describe('DELETE /api/v0.01/roles', () => {
-    it('should throw an error if all roles are unconciously to be deleted', (done) => {
+  describe('DELETE /api/v0.01/access_codes', () => {
+    it('should throw an error if all access_codes are unconciously to be deleted', (done) => {
       chai.request(server)
-      .delete('/api/v0.01/roles')
+      .delete('/api/v0.01/access_codes')
       .end((err, res) => {
         // there should be a 405 status code
         res.status.should.equal(405);
@@ -589,10 +589,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // delete(id)
-  describe('DELETE /api/v0.01/roles/:id', () => {
-    it('should respond with the deleted role', (done) => {
+  describe('DELETE /api/v0.01/access_codes/:id', () => {
+    it('should respond with the deleted access code', (done) => {
       chai.request(server)
-      .delete('/api/v0.01/roles/1')
+      .delete('/api/v0.01/access_codes/1')
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -618,9 +618,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role id is null', (done) => {
+    it('should throw an error if the access code id is null', (done) => {
       chai.request(server)
-      .delete(`/api/v0.01/roles/${null}`)
+      .delete(`/api/v0.01/access_codes/${null}`)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -632,9 +632,9 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });
     });
-    it('should throw an error if the role is not found', (done) => {
+    it('should throw an error if the access code is not found', (done) => {
       chai.request(server)
-      .delete(`/api/v0.01/roles/4`)
+      .delete(`/api/v0.01/access_codes/4`)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -642,7 +642,7 @@ describe('routes : /api/v0.01/roles', function() {
         // key-value pair of {"status": "error"}
         res.body.status.should.eql('error');
         // there should be an error message
-        res.body.message.should.include('Role', 'not found');
+        res.body.message.should.include('Access code', 'not found');
         done();
       });
     });

@@ -1,13 +1,13 @@
-const RolesHelpers = require('../db/RolesHelpers')
+const AccessCodesHelpers = require('../db/AccessCodesHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
 
-const debug          = require('debug')('4members.RolesController')
-const debugGetAll    = require('debug')('4members.RolesController.getAll')
-const debugGet       = require('debug')('4members.RolesController.get')
-const debugInsert    = require('debug')('4members.RolesController.insert')
-const debugUpdate    = require('debug')('4members.RolesController.update')
-const debugDelete    = require('debug')('4members.RolesController.delete')
-const debugDeleteAll = require('debug')('4members.RolesController.deleteAll')
+const debug          = require('debug')('4members.AccessCodesController')
+const debugGetAll    = require('debug')('4members.AccessCodesController.getAll')
+const debugGet       = require('debug')('4members.AccessCodesController.get')
+const debugInsert    = require('debug')('4members.AccessCodesController.insert')
+const debugUpdate    = require('debug')('4members.AccessCodesController.update')
+const debugDelete    = require('debug')('4members.AccessCodesController.delete')
+const debugDeleteAll = require('debug')('4members.AccessCodesController.deleteAll')
 
 
 module.exports = {
@@ -42,7 +42,7 @@ module.exports = {
     debugGetAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     var retObj = {}
      // select
-    const result = await RolesHelpers.getAll()
+    const result = await AccessCodesHelpers.getAll()
     if (result.status=='error') {
       res.status(400).send(result)
       debugGetAll('RETURNS: error=%o', result)
@@ -82,7 +82,7 @@ module.exports = {
 
   async get (req, res) {
     debugGet('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-    const result = await RolesHelpers.get(req.params.id)
+    const result = await AccessCodesHelpers.get(req.params.id)
     if (result.status==='error') {
       res.status(404).send(result)
       debugGet('RETURNS: sending 404... %o', result)
@@ -139,7 +139,7 @@ module.exports = {
     const active = (req.body.active == undefined ? null : req.body.active)
 
     // insert
-    const result2 = await RolesHelpers.insert(id, name, dsc, active)
+    const result2 = await AccessCodesHelpers.insert(id, name, dsc, active)
     if (result2.status === 'error') {
       debugInsert('RETURNS: sending 400... %o', result2)
       res.status(400).send(result2)
@@ -211,7 +211,7 @@ module.exports = {
       return
     }
     // update
-    const result2 = await RolesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
+    const result2 = await AccessCodesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
       res.status(404).send(result2)
@@ -294,7 +294,7 @@ module.exports = {
       res.status(404).send(retObj)
       return      
     }
-    const result = await RolesHelpers.delete(req.params.id)
+    const result = await AccessCodesHelpers.delete(req.params.id)
     if (result.status == 'error') {
       debugDeleteAll('RETURNS: sending 404... %o', result)
       res.status(404).send(result)
