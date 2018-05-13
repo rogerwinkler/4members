@@ -2,6 +2,7 @@ const AuthenticationController = require('./controllers/AuthenticationController
 const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy')
 const AccessCodeController = require('./controllers/AccessCodeController')
 const RolesController = require('./controllers/RolesController')
+const DefaultController = require('./controllers/DefaultController')
 
 module.exports = (app) => {
 	app.post('/register', 
@@ -25,4 +26,22 @@ module.exports = (app) => {
 
 	app.put('/api/v0.01/roles/:id',
 		RolesController.update)
+
+	app.delete('/api/v0.01/roles',
+		RolesController.deleteAll)
+
+	app.delete('/api/v0.01/roles/:id',
+		RolesController.delete)
+
+	// catch-all for get, post, put, delete & patch...
+	app.get('*', 
+		DefaultController.catchAll)
+	app.post('*', 
+		DefaultController.catchAll)
+	app.put('*', 
+		DefaultController.catchAll)
+	app.delete('*', 
+		DefaultController.catchAll)
+	app.patch('*', 
+		DefaultController.catchAll)
 }

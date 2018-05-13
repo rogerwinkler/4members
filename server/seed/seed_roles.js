@@ -8,14 +8,10 @@ module.exports = {
     await RolesHelpers.deleteAll()
     for (var i=0; i<roles.length; i++) {
       try {
-        const res = await RolesHelpers.insert(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
-        if (res.error) {
-          debugLoadRoles('RETURNS: %o', res.error)
-        } else {
-          debugLoadRoles('RETURNS: "success"')
-        }
+        const result = await RolesHelpers.insert(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
+        debugLoadRoles('RETURNS: %o', result)
       } catch(e) {
-        console.log(e.stack)
+        debugLoadRoles('RETURNS: error')
       }
     }
   }

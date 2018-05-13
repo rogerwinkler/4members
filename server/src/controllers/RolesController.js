@@ -1,11 +1,13 @@
 const RolesHelpers = require('../db/RolesHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
 
-const debug = require('debug')('4members.RolesController')
-const debugGetAll = require('debug')('4members.RolesController.getAll')
-const debugGet = require('debug')('4members.RolesController.get')
-const debugInsert = require('debug')('4members.RolesController.insert')
-const debugUpdate = require('debug')('4members.RolesController.update')
+const debug          = require('debug')('4members.RolesController')
+const debugGetAll    = require('debug')('4members.RolesController.getAll')
+const debugGet       = require('debug')('4members.RolesController.get')
+const debugInsert    = require('debug')('4members.RolesController.insert')
+const debugUpdate    = require('debug')('4members.RolesController.update')
+const debugDelete    = require('debug')('4members.RolesController.delete')
+const debugDeleteAll = require('debug')('4members.RolesController.deleteAll')
 
 
 module.exports = {
@@ -13,21 +15,26 @@ module.exports = {
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
   // METHOD: async getAll (req, res) {}
-  //  Returns all objects of table roles.
+  //  Returns all objects of the table.
   // -----------------------------------------------------------------
   // PARAMS:  
   //  req: http request (receiving)
   //  res: response object (answering)        
   // -----------------------------------------------------------------
-  // RETURNS: 
-  //  res.status=201 success
-  //    res.data={
-  //      status: "success", 
-  //      data: [{role1}, ...]
-  //    }
+  // RETURNS: The found object in the standard structure in the body
+  //  of the http response:
   //
-  //  res.status=400 bad request
-  //    res.error={ error: {code, msg, dsc}}
+  //  in case of success: 200         in case of an error: 400
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
@@ -45,57 +52,71 @@ module.exports = {
     }
   },
 
+
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
   // METHOD: async get (req, res) {}
-  //  Returns an objects of table role.
+  //  Returns an object from the table.
   // -----------------------------------------------------------------
   // PARAMS:  
   //  req: http request (receiving)
-  //    req.body.id id of the role to be returned
+  //    req.params.id: [INT>0, NOT  NULL] id of the role to be returned
   //  res: response object (answering)        
   // -----------------------------------------------------------------
-  // RETURNS: 
-  //  res.status=201 success
-  //    res.data=[{role}]
+  // RETURNS: The found object in the standard structure in the body
+  //  of the http response:
   //
-  //  res.status=404 not found
-  //    res.error={ error: {code, msg, dsc}}
+  //  in case of success: 200         in case of an error: 404
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
   async get (req, res) {
     debugGet('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-    var retObj = {}
-     // select
     const result = await RolesHelpers.get(req.params.id)
     if (result.status==='error') {
       res.status(404).send(result)
-      debugGet('RETURNS: error=%o', result)
+      debugGet('RETURNS: sending 404... %o', result)
     } else {
       res.status(200).send(result)
-      debugGet('RETURNS: %o', result)
+      debugGet('RETURNS: sending 200... %o', result)
     }
   },
+
 
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
   // METHOD: async insert (req, res) {}
-  //  Inserts a role object contained in req.body into the database.
+  //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
   //  req: http request (receiving)
+  //    req.body: {obj} object to be inserted
   //  res: response object (answering)        
   // -----------------------------------------------------------------
-  // RETURNS: 
-  //  res.status=201 success
-  //    res.data={
-  //      status: "success", 
-  //      data: [{id, name, dsc, active}]
-  //    }
+  // RETURNS: The inserted object in the standard structure in the body
+  //  of the http response:
   //
-  //  res.status=400 bad request
-  //    res.error={ error: {code, msg, dsc}}
+  //  in case of success: 201         in case of an error: 400
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
@@ -104,9 +125,9 @@ module.exports = {
     var retObj = {}
 
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasInvalidProperties(req.body, ['id','name','dsc','active'])
-    if (result1.error) {
-      debugInsert('RETURNS: %o', result1)
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','name','dsc','active'])
+    if (result1.status == 'error') {
+      debugInsert('RETURNS: sending 400... %o', result1)
       res.status(400).send(result1)
       return
     }
@@ -119,40 +140,168 @@ module.exports = {
 
     // insert
     const result2 = await RolesHelpers.insert(id, name, dsc, active)
-    if (result2.error) {
-      res.status(400).send({error: result2.error})
-      debugInsert('RETURNS: error=%o', result2.error)
+    if (result2.status === 'error') {
+      debugInsert('RETURNS: sending 400... %o', result2)
+      res.status(400).send(result2)
     } else {
-      retObj = {
-        'status' : 'success',
-        'data': result2.rows
-      }
-      res.status(201).send(retObj)
-      debugInsert('RETURNS: %o', retObj)
+      debugInsert('RETURNS: sending 201... %o', result2)
+      res.status(201).send(result2)
     }
   },
 
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD: async update (req, res) {}
+  //  Updates an object in the table.
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  req: http request (receiving)
+  //    req.params.id: id of the object to be updated.
+  //    req.body: {obj} object properties to be updated.
+  //  res: response object (answering)        
+  // -----------------------------------------------------------------
+  // RETURNS: The found object in the standard structure in the body
+  //  of the http response:
+  //
+  //  in case of success: 200         in case of an error: 404
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+
   async update (req, res) {
     debugUpdate('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-
+    // validate: is there an id
+    if (!req.params.id) {
+      const retObj = {
+        status : 'error',
+        code   : 1010,
+        message: 'Id missing in request parameter', 
+        detail : 'Missing parameter "id" in http request PUT /:id'
+      }
+      debugUpdate('RETURNS: sending 404... %o', retObj)
+      res.status(404).send(retObj)
+      return      
+    }
+    // check if body is empty object
+    if (Object.keys(req.body).length === 0) {
+      const retObj = {
+        status : 'error',
+        code   : 1012,
+        message: 'No properties in body of http request PUT /:id', 
+        detail : 'Http request body must contain at least one property'
+      }
+      debugUpdate('RETURNS: sending 404... %o', retObj)
+      res.status(404).send(retObj)
+      return      
+    }
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasInvalidProperties(req.body, ['id','name','dsc','active'])
-    if (result1.error) {
-      debugUpdate('RETURNS: %o', result1)
-      res.status(400).send(result1)
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['name','dsc','active'])
+    if (result1.status == 'error') {
+      debugUpdate('RETURNS: sending 404... %o', result1)
+      res.status(404).send(result1)
       return
     }
-
     // update
-    const result = await RolesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
-    if (result.error) {
-      res.status(400).send({error: result.error})
-      debugUpdate('RETURNS: error=%o', result.error)
+    const result2 = await RolesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
+    if (result2.status == 'error') {
+      debugUpdate('RETURNS: sending 404... %o', result2)
+      res.status(404).send(result2)
     } else {
-      res.status(200).send({
-        'role': result.rows[0]
-      })
-      debugUpdate('RETURNS: send role=%o', result.rows[0])
+      debugUpdate('RETURNS: sending 200... %o', result2)
+      res.status(200).send(result2)
+    }
+  }, 
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD: async deleteAll (req, res) {}
+  //  Method not allowed!!!
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  req: http request (receiving)
+  //  res: response object (answering)        
+  // -----------------------------------------------------------------
+  // RETURNS: Allways an error in the standard structure in the body
+  //  of the http response:
+  //
+  //  {
+  //    status : "error",
+  //    code:  : 1014
+  //    message: "Method not allowed"
+  //    detail : "Avoid unconciously deleting all objects"
+  //  }
+  // -----------------------------------------------------------------
+
+  async deleteAll (req, res) {
+    debugDeleteAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
+    const retObj = {
+      status  : 'error',
+      code    : 1014,
+      message : 'Method not allowed',
+      detail  : 'Avoid unconciously deleting all objects'
+    }
+    debugDeleteAll('RETURNS: sending 405... %o', retObj)
+    res.status(405).send(retObj)
+  }, 
+
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD: async delete (req, res) {}
+  //  Deletes an object from the table.
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  req: http request (receiving)
+  //    req.params.id: id of the object to be updated.
+  //  res: response object (answering)        
+  // -----------------------------------------------------------------
+  // RETURNS: The deleted object in the standard structure in the body
+  //  of the http response:
+  //
+  //  in case of success: 200         in case of an error: 404
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+
+  async delete (req, res) {
+    debugDeleteAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
+    // validate: is there an id
+    if (!req.params.id) {
+      const retObj = {
+        status : 'error',
+        code   : 1013,
+        message: 'Id missing in request parameter', 
+        detail : 'Missing parameter "id" in http request DELETE /:id'
+      }
+      debugUpdate('RETURNS: sending 404... %o', retObj)
+      res.status(404).send(retObj)
+      return      
+    }
+    const result = await RolesHelpers.delete(req.params.id)
+    if (result.status == 'error') {
+      debugDeleteAll('RETURNS: sending 404... %o', result)
+      res.status(404).send(result)
+    } else {
+      debugDeleteAll('RETURNS: sending 200... %o', result)
+      res.status(200).send(result)
     }
   } 
+
 }
