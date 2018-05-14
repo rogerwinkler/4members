@@ -172,6 +172,7 @@ module.exports = {
     //  - data types
     //  - id is unique
     //  - name is unique and not null, 
+    //  - active is not null
 
     // find next id if id is not specified
     if (id == null || id == undefined) {
@@ -256,6 +257,7 @@ module.exports = {
     //  - data types
     //  - id is unique and not null
     //  - name is unique and not null
+    //  - active ist not null
 
     // remove properties that are undefined
     var primeKeys = ['id']
@@ -305,7 +307,7 @@ module.exports = {
     } finally {
       pool.end()
       debugUpdate('RETURNS: %o', retObj)
-      return retObj
+      return retObj      
     }
   },
 

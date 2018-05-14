@@ -44,11 +44,11 @@ module.exports = {
      // select
     const result = await RolesHelpers.getAll()
     if (result.status=='error') {
-      res.status(400).send(result)
-      debugGetAll('RETURNS: error=%o', result)
+      debugGetAll('RETURNS: sending 400... %o', result)
+      return res.status(400).send(result)
     } else {
-      res.status(200).send(result)
-      debugGetAll('RETURNS: %o', result)
+      debugGetAll('RETURNS: sending 200... %o', result)
+      return res.status(200).send(result)
     }
   },
 
@@ -84,11 +84,11 @@ module.exports = {
     debugGet('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     const result = await RolesHelpers.get(req.params.id)
     if (result.status==='error') {
-      res.status(404).send(result)
       debugGet('RETURNS: sending 404... %o', result)
+      return res.status(404).send(result)
     } else {
-      res.status(200).send(result)
       debugGet('RETURNS: sending 200... %o', result)
+      return res.status(200).send(result)
     }
   },
 
@@ -128,8 +128,7 @@ module.exports = {
     const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','name','dsc','active'])
     if (result1.status == 'error') {
       debugInsert('RETURNS: sending 400... %o', result1)
-      res.status(400).send(result1)
-      return
+      return res.status(400).send(result1)
     }
 
     // check which properties of query object are provided and set accordingly
@@ -142,10 +141,10 @@ module.exports = {
     const result2 = await RolesHelpers.insert(id, name, dsc, active)
     if (result2.status === 'error') {
       debugInsert('RETURNS: sending 400... %o', result2)
-      res.status(400).send(result2)
+      return res.status(400).send(result2)
     } else {
       debugInsert('RETURNS: sending 201... %o', result2)
-      res.status(201).send(result2)
+      return res.status(201).send(result2)
     }
   },
 
@@ -188,8 +187,7 @@ module.exports = {
         detail : 'Missing parameter "id" in http request PUT /:id'
       }
       debugUpdate('RETURNS: sending 404... %o', retObj)
-      res.status(404).send(retObj)
-      return      
+      return res.status(404).send(retObj)
     }
     // check if body is empty object
     if (Object.keys(req.body).length === 0) {
@@ -200,24 +198,22 @@ module.exports = {
         detail : 'Http request body must contain at least one property'
       }
       debugUpdate('RETURNS: sending 404... %o', retObj)
-      res.status(404).send(retObj)
-      return      
+      return res.status(404).send(retObj)
     }
     // validate properties of query object in req.body
     const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['name','dsc','active'])
     if (result1.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result1)
-      res.status(404).send(result1)
-      return
+      return res.status(404).send(result1)
     }
     // update
     const result2 = await RolesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
-      res.status(404).send(result2)
+      return res.status(404).send(result2)
     } else {
       debugUpdate('RETURNS: sending 200... %o', result2)
-      res.status(200).send(result2)
+      return res.status(200).send(result2)
     }
   }, 
 
@@ -250,7 +246,7 @@ module.exports = {
       detail  : 'Avoid unconciously deleting all objects'
     }
     debugDeleteAll('RETURNS: sending 405... %o', retObj)
-    res.status(405).send(retObj)
+    return res.status(405).send(retObj)
   }, 
 
 
@@ -291,16 +287,15 @@ module.exports = {
         detail : 'Missing parameter "id" in http request DELETE /:id'
       }
       debugUpdate('RETURNS: sending 404... %o', retObj)
-      res.status(404).send(retObj)
-      return      
+      return res.status(404).send(retObj)
     }
     const result = await RolesHelpers.delete(req.params.id)
     if (result.status == 'error') {
       debugDeleteAll('RETURNS: sending 404... %o', result)
-      res.status(404).send(result)
+      return res.status(404).send(result)
     } else {
       debugDeleteAll('RETURNS: sending 200... %o', result)
-      res.status(200).send(result)
+      return res.status(200).send(result)
     }
   } 
 

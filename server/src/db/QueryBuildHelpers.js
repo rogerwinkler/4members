@@ -47,4 +47,49 @@ module.exports = {
     debugCreateUpdateStatement('RETURNS: %s', updateStmt)
     return updateStmt
   }
+
+
+
+  // createUpdateStatement( tableName, objPrimeKeys, objProperties) {
+  //   debugCreateUpdateStatement('INPUT: tableName=%s, objPrimeKeys=%o, objProperties=%o', tableName, objPrimeKeys, objProperties)
+
+  //   var updateStmt = 'UPDATE ' + tableName + ' SET ' 
+
+  //   var type = ''
+  //   for (var i=0; i<Object.keys(objProperties).length; i++) {
+  //     if (isNaN(parseInt(objProperties[Object.keys(objProperties)[i]]))) {
+  //       type = typeof objProperties[Object.keys(objProperties)[i]]
+  //     } else {
+  //       type = 'number'
+  //     }
+  //     updateStmt = updateStmt + Object.keys(objProperties)[i] + '=' + (type==='string' ? '\''+objProperties[Object.keys(objProperties)[i]]+'\'' : objProperties[Object.keys(objProperties)[i]])
+  //     if (i<Object.keys(objProperties).length-1) { // add a comma...
+  //       updateStmt = updateStmt + ', '
+  //     } else { // last property => no comma needed...
+  //       updateStmt = updateStmt + ' '
+  //     }
+  //   }
+
+  //   updateStmt = updateStmt + 'WHERE '
+
+  //   for (var i=0; i<Object.keys(objPrimeKeys).length; i++) {
+  //     if (isNaN(parseInt(objPrimeKeys[Object.keys(objPrimeKeys)[i]]))) {
+  //       type = typeof objPrimeKeys[Object.keys(objPrimeKeys)[i]]
+  //     } else {
+  //       type = 'number'
+  //     }
+  //     updateStmt = updateStmt + Object.keys(objPrimeKeys)[i] + '=' + (type==='string' ? '\''+objPrimeKeys[Object.keys(objPrimeKeys)[i]]+'\'' : objPrimeKeys[Object.keys(objPrimeKeys)[i]])
+  //     if (i<Object.keys(objPrimeKeys).length-1) { // add an and...
+  //       updateStmt = updateStmt + ' and '
+  //     } else { // last property => no and needed...
+  //       updateStmt = updateStmt + ' '
+  //     }
+  //   }
+
+  //   updateStmt = updateStmt + ' returning *'
+
+  //   debugCreateUpdateStatement('RETURNS: %s', updateStmt)
+  //   return updateStmt
+  // }
+
 }
