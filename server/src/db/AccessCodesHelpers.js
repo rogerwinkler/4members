@@ -1,4 +1,5 @@
 const { Pool } = require('pg')
+const QueryBuildHelpers = require('./QueryBuildHelpers')
 const debug = require('debug')('4members.AccessCodeHelpers')
 const debugGetAll = require('debug')('4members.AccessCodeHelpers.getAll')
 const debugGet = require('debug')('4members.AccessCodeHelpers.get')
@@ -256,30 +257,28 @@ module.exports = {
     //  - id is unique and not null
     //  - name is unique and not null
 
-    // check if dsc and active are provided or not
-    if (dsc===undefined && active===undefined) {
-      text = 'UPDATE access_codes SET name=$2 WHERE id=$1 RETURNING *'
-      values = [id, name]
-    } else if (name===undefined && active===undefined) {
-      text = 'UPDATE access_codes SET dsc=$2 WHERE id=$1 RETURNING *'
-      values = [id, dsc]
-    } else if (name===undefined && dsc===undefined) {
-      text = 'UPDATE access_codes SET active=$2 WHERE id=$1 RETURNING *'
-      values = [id, active]
-    } else if (active===undefined) {
-      text = 'UPDATE access_codes SET name=$2, dsc=$3 WHERE id=$1 RETURNING *'
-      values = [id, name, dsc]
-    } else if (dsc===undefined) {
-      text = 'UPDATE access_codes SET name=$2, active=$3 WHERE id=$1 RETURNING *'
-      values = [id, name, active]
-    } else if (name===undefined) {
-      text = 'UPDATE access_codes SET dsc=$2, active=$3 WHERE id=$1 RETURNING *'
-      values = [id, dsc, active]
-    } else {
-      text = 'UPDATE access_codes SET name=$2, dsc=$3, active=$4 WHERE id=$1 RETURNING *'
-      values = [id, name, dsc, active]
+    // remove properties that are undefined
+    var primeKeys = ['id']
+    values = [id]
+    var properties = []
+    // careful null===undefined ==> false, null==undefined ==> true
+    // but null must be allowed!!!
+    if (name!==undefined) { 
+      properties.push('name')
+      values.push(name)
+    }
+    if (dsc!==undefined) {
+      properties.push('dsc')
+      values.push(dsc)
+    }
+    if (active!==undefined) {
+      properties.push('active')
+      values.push(active)
     }
 
+    text = QueryBuildHelpers.createUpdateStatement('access_codes', primeKeys, properties)
+    debugUpdate('Query: text="%s"', text)
+    debugUpdate('Query: values=%o', values)
     // update
     try {
       const { rows } = await pool.query(text, values)

@@ -565,6 +565,23 @@ describe('routes : /api/v0.01/roles', function() {
         done();
       });      
     });
+    it('should throw an error if active is null', (done) => {
+      chai.request(server)
+      .put('/api/v0.01/roles/1')
+      .send({
+        active: null
+      })
+      .end((err, res) => {
+        // there should be a 404 status code
+        res.status.should.equal(404);
+        // the JSON response body should have a
+        // key-value pair of {"status": "error"}
+        res.body.status.should.equal('error');
+        // there should be an error message 'null value in column "name" violates not-null constraint'
+        res.body.message.should.include('null value in column', 'violates not-null constraint');
+        done();
+      });      
+    });
   });
 
   /////////////////////////////////////////////////////////
