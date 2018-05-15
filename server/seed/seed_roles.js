@@ -11,7 +11,7 @@ module.exports = {
         const result = await RolesHelpers.insert(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
         debugLoadRoles('RETURNS: %o', result)
       } catch(e) {
-        debugLoadRoles('RETURNS: error')
+        debugLoadRoles('RETURNS: error=%s', e.message)
       }
     }
   }

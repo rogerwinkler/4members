@@ -1,45 +1,7 @@
 const { Pool } = require('pg')
-const jwt = require('jsonwebtoken')
-const config = require('../config/config')
+const AuthenticationHelpers = require('../db/AuthenticationHelpers')
 const debug = require('debug')('4members.AuthenticationController')
 const debugRegister = require('debug')('4members.AuthenticationController.register')
-
-// const Promise = require('bluebird')
-// const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
-const bcrypt = require('bcrypt-nodejs')
-
-
-//helper function
-function jwtSignUser(user) {
-  const ONE_WEEK = 60 * 60 * 24 * 7
-  return jwt.sign(user, config.authentication.jwtSecret, {
-    expiresIn: ONE_WEEK
-  })
-}
-
-function hashPassword (password) {
-  const SALT_FACTOR = 8
-  return bcrypt.hashSync(password, bcrypt.genSaltSync(SALT_FACTOR))
-}
-
-// function hashPasswordAsync (password) {
-//  const SALT_FACTOR = 8
-//  var myHash
-
-//  bcrypt
-//    .genSaltAsync(SALT_FACTOR)
-//    .then(salt => bcrypt.hashAsync(password, salt, null))
-//    .then(hash => {
-//      console.log(hash)
-//      myHash = hash
-//      return myHash
-//    })
-//  // return myHash
-// }
-
-function comparePasswords(pwd, encryptedPwd) {
-  return bcrypt.compareSync(pwd, encryptedPwd)
-}
 
 
 module.exports = {
@@ -82,7 +44,7 @@ module.exports = {
     //  - active is not null
 
     text = 'INSERT INTO users(id, username, password, email, active) VALUES($1, $2, $3, $4, $5) RETURNING *'
-    values = [nextUserId, req.body.username, hashPassword(req.body.password), req.body.email, true]
+    values = [nextUserId, req.body.username, AuthenticationHelpers.hashPassword(req.body.password), req.body.email, true]
 
     try {
       const result = await pool.query(text, values)
@@ -102,7 +64,12 @@ module.exports = {
           status : 'success',
           data   : {
             user : result.rows[0],
-            token: jwtSignUser({user: result.rows[0].username})
+            token: AuthenticationHelpers.jwtSignUser({
+              user: {
+                id       : result.rows[0].id,
+                username : result.rows[0].username,
+              }
+            })
           }
         } 
         debugRegister('RETURNS: sending 200... %o', retObj)
@@ -134,10 +101,15 @@ module.exports = {
       // console.log(result.rows[0])
       // console.log(req.body)
       // console.log(comparePasswords(req.body.password, result.rows[0].password))
-      if (comparePasswords(req.body.password, result.rows[0].password)) {
+      if (AuthenticationHelpers.comparePasswords(req.body.password, result.rows[0].password)) {
         res.send({
           user: result.rows[0],
-          token: jwtSignUser({user: result.rows[0].username})
+          token: AuthenticationHelpers.jwtSignUser({
+            user: {
+              id       : result.rows[0].id,
+              username : result.rows[0].username
+            }
+          })
         })
         await pool.end()
       } else {

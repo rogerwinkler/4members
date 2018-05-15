@@ -11,7 +11,7 @@ module.exports = {
         const result = await AccessCodesHelpers.insert(access_codes[i].id, access_codes[i].name, access_codes[i].dsc, access_codes[i].active)
         debugLoadAccessCodes('RETURNS: %o', result)
       } catch(e) {
-        debugLoadAccessCodes('RETURNS: error')
+        debugLoadAccessCodes('RETURNS: error=%s', e.message)
       }
     }
   }

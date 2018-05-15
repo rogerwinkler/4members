@@ -316,7 +316,7 @@ module.exports = {
   //  Deletes the object with the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id: [INT>0, NOT NULL], id of access code.
+  //  id: [INT>0, NOT NULL], id of object to be deleted.
   // -----------------------------------------------------------------
   // RETURNS: The deleted object in the standard structure in the 
   //  body of the http response:
