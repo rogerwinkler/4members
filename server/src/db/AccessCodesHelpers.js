@@ -134,11 +134,12 @@ module.exports = {
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id:     [INT>0], id of object. If id is null, then
-  //          MAX(id)+1 is taken.
-  //  name:   [STRING, UNIQUE, NOT NULL], name of object to be inserted. 
-  //  dsc:    [STRING], description of object to be inserted.
-  //  active: [BOOL, DEFAULTS TO TRUE]
+  //  accessCode: Access code (see src/models/AccessCode.js) with properties...
+  //    id:     [INT>0], id of object. If id is null, then
+  //            MAX(id)+1 is taken.
+  //    name:   [STRING, UNIQUE, NOT NULL], name of object to be inserted. 
+  //    dsc:    [STRING], description of object to be inserted.
+  //    active: [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
   //  body of the http response:
@@ -157,8 +158,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async insert (id, name, dsc, active) {
-    debugInsert('INPUT: id=%d, name="%s", dsc="%s", active=%s', id, name, dsc, active)
+  async insert (accessCode) {
+    debugInsert('INPUT: accessCode=%o', accessCode)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -166,7 +167,7 @@ module.exports = {
     var   retObj = {}
 
     // active defaults to true if not explicitly set to false
-    const calcActive = ((active != false) ? true : false)
+    const calcActive = ((accessCode.active != false) ? true : false)
 
     // db contraints check, so we don't have to: 
     //  - data types
@@ -174,7 +175,7 @@ module.exports = {
     //  - name is unique and not null, 
 
     // find next id if id is not specified
-    if (id == null || id == undefined) {
+    if (accessCode.id === null || accessCode.id === undefined) {
       text = 'SELECT max(id)+1 AS nextid FROM access_codes'
       try {
         const { rows } = await pool.query(text)
@@ -191,11 +192,11 @@ module.exports = {
         return retObj
       }
     } else {
-      nextId = id
+      nextId = accessCode.id
     }
 
     text = 'INSERT INTO access_codes(id, name, dsc, active) VALUES($1, $2, $3, $4) RETURNING *'
-    values = [nextId, name, dsc, calcActive]
+    values = [nextId, accessCode.name, accessCode.dsc, calcActive]
     try {
       const { rows } = await pool.query(text, values)
       retObj = {
@@ -219,14 +220,15 @@ module.exports = {
   
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async update (id, name, dsc, active) {}
+  // METHOD: async update (accessCode) {}
   //  Updates the object of the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id:     [INT>0, NOT NULL], id of object.
-  //  name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
-  //  dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
-  //  active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
+  //  accessCode: Access code (see src/models/AccessCode.js) with properties...
+  //    id:     [INT>0, NOT NULL], id of object.
+  //    name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
+  //    dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
+  //    active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 
   //  body of the http response:
@@ -245,8 +247,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async update (id, name, dsc, active) {
-    debugUpdate('INPUT: id=%d, name="%s", dsc="%s", active=%s', id, name, dsc, active)
+  async update (accessCode) {
+    debugUpdate('INPUT: accessCode=%o', accessCode)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -259,21 +261,21 @@ module.exports = {
 
     // remove properties that are undefined
     var primeKeys = ['id']
-    values = [id]
+    values = [accessCode.id]
     var properties = []
     // careful null===undefined ==> false, null==undefined ==> true
     // but null must be allowed!!!
-    if (name!==undefined) { 
+    if (accessCode.name!==undefined) { 
       properties.push('name')
-      values.push(name)
+      values.push(accessCode.name)
     }
-    if (dsc!==undefined) {
+    if (accessCode.dsc!==undefined) {
       properties.push('dsc')
-      values.push(dsc)
+      values.push(accessCode.dsc)
     }
-    if (active!==undefined) {
+    if (accessCode.active!==undefined) {
       properties.push('active')
-      values.push(active)
+      values.push(accessCode.active)
     }
 
     text = QueryBuildHelpers.createUpdateStatement('access_codes', primeKeys, properties)
@@ -286,7 +288,7 @@ module.exports = {
         retObj = {
           status  : 'error',
           code    : 1015,
-          message : 'Access code of id "' + id + '" not found',
+          message : 'Access code of id "' + id + '" not found, id is not defined',
           detail  : 'Record of access code to be updated does not exist', 
         }
       } else {

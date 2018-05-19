@@ -1,5 +1,6 @@
 const RolesHelpers = require('../db/RolesHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
+const Role = require('../models/Role')
 
 const debug          = require('debug')('4members.RolesController')
 const debugGetAll    = require('debug')('4members.RolesController.getAll')
@@ -132,13 +133,15 @@ module.exports = {
     }
 
     // check which properties of query object are provided and set accordingly
-    const id = (req.body.id == undefined ? null : req.body.id)
-    const name = (req.body.name == undefined ? null : req.body.name)
-    const dsc = (req.body.dsc == undefined ? null : req.body.dsc)
-    const active = (req.body.active == undefined ? null : req.body.active)
+    const role = new Role (
+      (req.body.id === undefined     ? null : req.body.id    ),
+      (req.body.name === undefined   ? null : req.body.name  ),
+      (req.body.dsc === undefined    ? null : req.body.dsc   ),
+      (req.body.active === undefined ? null : req.body.active)
+    )
 
     // insert
-    const result2 = await RolesHelpers.insert(id, name, dsc, active)
+    const result2 = await RolesHelpers.insert(role)
     if (result2.status === 'error') {
       debugInsert('RETURNS: sending 400... %o', result2)
       return res.status(400).send(result2)
@@ -207,7 +210,8 @@ module.exports = {
       return res.status(404).send(result1)
     }
     // update
-    const result2 = await RolesHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
+    const role = new Role(req.params.id, req.body.name, req.body.dsc, req.body.active)
+    const result2 = await RolesHelpers.update(role)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
       return res.status(404).send(result2)

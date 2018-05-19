@@ -1,1 +1,4 @@
-test/**/*.js
+//test/**/*.js
+test/**/test_access_codes.js
+test/**/test_roles.js
+test/**/test_users.js

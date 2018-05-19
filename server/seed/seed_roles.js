@@ -1,5 +1,6 @@
 const roles = require('./roles.json')
 const RolesHelpers = require('../src/db/RolesHelpers')
+const Role = require('../src/models/Role')
 const debugLoadRoles = require('debug')('4members.seed_roles.loadRoles')
 
 module.exports = {
@@ -8,11 +9,14 @@ module.exports = {
     await RolesHelpers.deleteAll()
     for (var i=0; i<roles.length; i++) {
       try {
-        const result = await RolesHelpers.insert(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
-        debugLoadRoles('RETURNS: %o', result)
+        const role = new Role(roles[i].id, roles[i].name, roles[i].dsc, roles[i].active)
+        const result = await RolesHelpers.insert(role)
+        debugLoadRoles('IN FOR LOOP: %o', result)
       } catch(e) {
-        debugLoadRoles('RETURNS: error=%s', e.message)
+        debugLoadRoles('IN FOR LOOP: error=%s', e.message)
+        return
       }
     }
+    debugLoadRoles('RETURNS')
   }
 }

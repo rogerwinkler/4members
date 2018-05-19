@@ -9,6 +9,8 @@ const server = require('../../src/app');
 
 describe('routes : /api/v0.01/roles', function() {
 
+  var testToken = ''
+
   beforeEach( async function() {
     await seed_roles.loadRoles();
     // done();
@@ -18,12 +20,45 @@ describe('routes : /api/v0.01/roles', function() {
     done();
   });
 
+
+  
+  /////////////////////////////////////////////////////////
+  // get and set testToken
+  describe('GET /api/v0.01/login', () => {
+    it('should login and set testToken for authenticated testing hereafter...', (done) => {
+      chai.request(server)
+      .post('/api/v0.01/login')
+      .send({
+        'username' : 't1',
+        'password' : 'pwdtest1'
+      })
+      .set('Authorization', 'Bearer ' + testToken)
+      .end((err, res) => {
+        // there should be no error
+        should.not.exist(err);
+        // there should be a 200 status code
+        res.status.should.equal(200);
+        // the response should be JSON
+        res.type.should.equal('application/json');
+        // the JSON response body should have a
+        // key-value pair of {"status": "success"}
+        res.body.status.should.eql('success');
+        res.body.data[0].should.have.property('token')
+        testToken = res.body.data[0].token
+        done();
+      });
+    });
+  });
+
+
+
   /////////////////////////////////////////////////////////
   // getAll
   describe('GET /api/v0.01/roles', () => {
     it('should respond with all roles', (done) => {
       chai.request(server)
       .get('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -54,6 +89,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should respond with a single role', (done) => {
       chai.request(server)
       .get('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -78,6 +114,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role id is null', (done) => {
       chai.request(server)
       .get(`/api/v0.01/roles/${null}`)
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -92,6 +129,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role is not found', (done) => {
       chai.request(server)
       .get(`/api/v0.01/roles/4`)
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -112,6 +150,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should respond with a success message along with a single role that was added', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         id     : 4,
         name   : 'someTestAdmin',
@@ -140,6 +179,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should generate id automatically when not provided', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someOtherTestAdmin',
         dsc    : 'just used for testing',
@@ -169,6 +209,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should set active to true (default) if not provided', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         id     : 6,
         name   : 'stillAnotherTestAdmin',
@@ -198,6 +239,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role already exists', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         id     : 1,
         name   : 'someTestAdmin',
@@ -218,6 +260,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if name is not provided', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         id     : 7,
         dsc    : 'just used for testing',
@@ -237,6 +280,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if wrong property is provided', (done) => {
       chai.request(server)
       .post('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         hugo   : 7,
         dsc    : 'just used for testing',
@@ -262,6 +306,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should respond with a success message along with a single role that was updated', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -297,6 +342,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s name and just role\'s name', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someOtherTestAdmin'
       })
@@ -325,6 +371,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s description and just role\'s description', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         dsc : 'some other description'
       })
@@ -353,6 +400,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s property active and just role\'s property active', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         active : false
       })
@@ -381,6 +429,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s properties dsc and active', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         dsc    : 'some description',
         active : false
@@ -410,6 +459,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s properties name and active', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someNewName',
         active : false
@@ -439,6 +489,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s properties name and dsc', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name : 'someNewName',
         dsc  : 'some new description'
@@ -468,6 +519,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should change role\'s properties name, dsc and active', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someNewName',
         dsc    : 'some new description',
@@ -498,6 +550,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role does not exist', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/4')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -510,13 +563,14 @@ describe('routes : /api/v0.01/roles', function() {
         // key-value pair of {"status": "error"}
         res.body.status.should.equal('error');
         // there should be an error message 'Role of id xxxx not found'
-        res.body.message.should.include('Role of id', 'not found');
+        res.body.message.should.include('id is not defined');
         done();
       });
     });
     it('should throw an error if no param :id is provided', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someTestAdmin',
         dsc    : 'just used for testing',
@@ -536,6 +590,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if no properties provided', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({})
       .end((err, res) => {
         // there should be a 404 status code
@@ -551,6 +606,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if name is null', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         name: null
       })
@@ -568,6 +624,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if active is null', (done) => {
       chai.request(server)
       .put('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .send({
         active: null
       })
@@ -590,6 +647,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if all roles are unconciously to be deleted', (done) => {
       chai.request(server)
       .delete('/api/v0.01/roles')
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be a 405 status code
         res.status.should.equal(405);
@@ -610,6 +668,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should respond with the deleted role', (done) => {
       chai.request(server)
       .delete('/api/v0.01/roles/1')
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be no errors
         should.not.exist(err);
@@ -638,6 +697,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role id is null', (done) => {
       chai.request(server)
       .delete(`/api/v0.01/roles/${null}`)
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);
@@ -652,6 +712,7 @@ describe('routes : /api/v0.01/roles', function() {
     it('should throw an error if the role is not found', (done) => {
       chai.request(server)
       .delete(`/api/v0.01/roles/4`)
+      .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         // there should be a 404 status code
         res.status.should.equal(404);

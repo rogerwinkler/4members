@@ -1,8 +1,8 @@
-function AccessCode (id, name, dsc, active) {
+function Role (id, name, dsc, active) {
 	this.id     = id;
 	this.name   = name;
 	this.dsc    = dsc;
 	this.active = active;
 }
 
-module.exports = AccessCode;
+module.exports = Role;

@@ -1,5 +1,6 @@
 const UsersHelpers = require('../db/UsersHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
+const AuthenticationHelpers = require('../db/AuthenticationHelpers')
 const User = require('../models/User')
 const debug          = require('debug')('4members.UsersController')
 const debugGetAll    = require('debug')('4members.UsersController.getAll')
@@ -8,6 +9,8 @@ const debugInsert    = require('debug')('4members.UsersController.insert')
 const debugUpdate    = require('debug')('4members.UsersController.update')
 const debugDelete    = require('debug')('4members.UsersController.delete')
 const debugDeleteAll = require('debug')('4members.UsersController.deleteAll')
+const debugRegister  = require('debug')('4members.UsersController.register')
+const debugLogin     = require('debug')('4members.UsersController.login')
 
 
 module.exports = {
@@ -40,15 +43,14 @@ module.exports = {
 
   async getAll (req, res) {
     debugGetAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-    var retObj = {}
-     // select
     const result = await UsersHelpers.getAll()
     if (result.status=='error') {
       debugGetAll('RETURNS: sending 400... %o', result)
-      return res.status(400).send(result)
+      return res.status(400).json(result)
     } else {
+      // result.authData = req.authData
       debugGetAll('RETURNS: sending 200... %o', result)
-      return res.status(200).send(result)
+      return res.status(200).json(result)
     }
   },
 
@@ -204,13 +206,14 @@ module.exports = {
       return res.status(404).send(retObj)
     }
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['name','dsc','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['username','password','email','active'])
     if (result1.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result1)
       return res.status(404).send(result1)
     }
     // update
-    const result2 = await UsersHelpers.update(req.params.id, req.body.name, req.body.dsc, req.body.active)
+    const user = new User(req.params.id, req.body.username, req.body.password, req.body.email, req.body.active)
+    const result2 = await UsersHelpers.update(user)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
       return res.status(404).send(result2)
@@ -300,6 +303,137 @@ module.exports = {
       debugDeleteAll('RETURNS: sending 200... %o', result)
       return res.status(200).send(result)
     }
-  } 
+  },
+
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD: async register (req, res) {}
+  //  Registers a new user
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  req: http request (receiving)
+  //    req.body.username: user's username
+  //    req.body.password: user's password
+  //    req.body.email   : user's email
+  //  res: response object (answering)        
+  // -----------------------------------------------------------------
+  // RETURNS: The inserted user in the standard structure in the body
+  //  of the http response:
+  //
+  //  in case of success: 201         in case of an error: 400
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+
+  async register (req, res) {
+    debugRegister('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
+    // validate properties in req.body
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['username','password','email'])
+    if (result1.status == 'error') {
+      debugRegister('RETURNS: sending 400... %o', result1)
+      return res.status(400).send(result1)
+    }
+    const user = new User(null, req.body.username, req.body.password, req.body.email, true)
+    const result = await UsersHelpers.insert(user)
+    if (result.status == 'error') {
+      debugRegister('RETURNS: sending 400... %o', result)
+      return res.status(400).send(result)
+    } else {
+      debugRegister('result=%o', result)
+      const retObj = {
+        status : "success",
+        data   : [{
+          user : {
+            id       : result.data[0].id,
+            username : result.data[0].username,
+            password : result.data[0].password,
+            email    : result.data[0].email,
+            active   : result.data[0].active
+          },
+          token : AuthenticationHelpers.jwtSignUser({
+            user: {
+              id       : result.data[0].id,
+              username : result.data[0].username
+            }
+          })
+        }]
+      }
+      debugRegister('RETURNS: sending 201... %o', retObj)
+      return res.status(201).send(retObj)
+    }
+  },
+
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD: async login (req, res) {}
+  //  Logs a  user in
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  req: http request (receiving)
+  //    req.body.username: user's username
+  //    req.body.password: user's password
+  //  res: response object (answering)        
+  // -----------------------------------------------------------------
+  // RETURNS: The inserted user in the standard structure in the body
+  //  of the http response:
+  //
+  //  in case of success: 200         in case of an error: 404
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj}]              code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+
+  async login (req, res) {
+    debugLogin('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
+    var retObj = {}
+    // check if username and password are there
+    if (!req.body.username || !req.body.password) {
+      retObj = {
+        status : 'error',
+        code   : 1028,
+        message: 'Username and password required',
+        detail : 'Login failed, username and password must be present'
+      }
+      debugLogin('RETURNS: sending 404... %o', retObj)
+      return res.status(404).send(retObj)
+    }
+    // check that ONLY username and password are there
+    if (Object.keys(req.body).length>2) {
+      retObj = {
+        status : 'error',
+        code   : 1029,
+        message: 'Wrong property provided, only username and password allowed',
+        detail : 'Login failed, wrong property, only username and password allowed'
+      }
+      debugLogin('RETURNS: sending 404... %o', retObj)
+      return res.status(404).send(retObj)
+    } 
+    const user = new User(null, req.body.username, req.body.password, null, null)
+    const result = await UsersHelpers.login(user)
+    if (result.status == 'error') {
+      debugLogin('RETURNS: sending 404... %o', result)
+      return res.status(404).send(result)
+    } else {
+      debugLogin('RETURNS: sending 200... %o', result)
+      return res.status(200).send(result)
+    }
+  }
 
 }

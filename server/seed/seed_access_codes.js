@@ -1,5 +1,6 @@
 const access_codes = require('./access_codes.json')
 const AccessCodesHelpers = require('../src/db/AccessCodesHelpers')
+const AccessCode = require('../src/models/AccessCode')
 const debugLoadAccessCodes = require('debug')('4members.seed_access_codes.loadAccessCodes')
 
 module.exports = {
@@ -8,11 +9,14 @@ module.exports = {
     await AccessCodesHelpers.deleteAll()
     for (var i=0; i<access_codes.length; i++) {
       try {
-        const result = await AccessCodesHelpers.insert(access_codes[i].id, access_codes[i].name, access_codes[i].dsc, access_codes[i].active)
-        debugLoadAccessCodes('RETURNS: %o', result)
+        const accessCode = new AccessCode(access_codes[i].id, access_codes[i].name, access_codes[i].dsc, access_codes[i].active)
+        const result = await AccessCodesHelpers.insert(accessCode)
+        debugLoadAccessCodes('IN FOR LOOP: %o', result)
       } catch(e) {
-        debugLoadAccessCodes('RETURNS: error=%s', e.message)
+        debugLoadAccessCodes('IN FOR LOOP: error=%s', e.message)
+        return
       }
     }
+    debugLoadAccessCodes('RETURNS')
   }
 }

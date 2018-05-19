@@ -12,8 +12,8 @@ const debugUpdateName = require('debug')('4members.UsersHelpers.updateName')
 const debugUpdateDsc = require('debug')('4members.UsersHelpers.updateDsc')
 const debugDelete = require('debug')('4members.UsersHelpers.delete')
 const debugDeleteAll = require('debug')('4members.UsersHelpers.deleteAll')
-const debugActivate = require('debug')('4members.UsersHelpers.activate')
-const debugInactivate = require('debug')('4members.UsersHelpers.inactivate')
+const debugLogin = require('debug')('4members.UsersHelpers.login')
+
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
@@ -131,16 +131,17 @@ module.exports = {
 
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async insert (id, username, password, email, active) {}
+  // METHOD: async insert (user) {}
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id      : [INT>0], id of object. If id is null, then
-  //            MAX(id)+1 is taken.
-  //  username: [STRING, UNIQUE, NOT NULL], username. 
-  //  password: [STRING, NOT NULL], password.
-  //  email   : [STRING], email address
-  //  active  : [BOOL, DEFAULTS TO TRUE]
+  //  user    : User object (see src/models/User.js) with properties...
+  //    id      : [INT>0], id of object. If id is null, then
+  //              MAX(id)+1 is taken.
+  //    username: [STRING, UNIQUE, NOT NULL], username. 
+  //    password: [STRING, NOT NULL], password.
+  //    email   : [STRING], email address
+  //    active  : [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
   //  body of the http response:
@@ -222,14 +223,15 @@ module.exports = {
   
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async update (id, name, dsc, active) {}
+  // METHOD: async update (user) {}
   //  Updates the object of the given id.
   // -----------------------------------------------------------------
-  // PARAMS:  
-  //  id:     [INT>0, NOT NULL], id of object.
-  //  name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
-  //  dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
-  //  active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
+  // PARAMS: 
+  //  user: User object (see src/models/User.js) with properties... 
+  //    id:       [INT>0, NOT NULL], id of object.
+  //    username: [STRING, UNIQUE, NOT NULL, NOT EMPTY], username 
+  //    password: [STRING, HASHED], password
+  //    active:   [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 
   //  body of the http response:
@@ -248,8 +250,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async update (id, name, dsc, active) {
-    debugUpdate('INPUT: id=%d, name="%s", dsc="%s", active=%s', id, name, dsc, active)
+  async update (user) {
+    debugUpdate('INPUT: user=%o', user)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -263,21 +265,25 @@ module.exports = {
 
     // remove properties that are undefined
     var primeKeys = ['id']
-    values = [id]
+    values = [user.id]
     var properties = []
     // careful null===undefined ==> false, null==undefined ==> true
     // but null must be allowed!!!
-    if (name!==undefined) { 
-      properties.push('name')
-      values.push(name)
+    if (user.username!==undefined) { 
+      properties.push('username')
+      values.push(user.username)
     }
-    if (dsc!==undefined) {
-      properties.push('dsc')
-      values.push(dsc)
+    if (user.password!==undefined) {
+      properties.push('password')
+      values.push(AuthenticationHelpers.hashPassword(user.password))
     }
-    if (active!==undefined) {
+    if (user.email!==undefined) {
+      properties.push('email')
+      values.push(user.email)
+    }
+    if (user.active!==undefined) {
       properties.push('active')
-      values.push(active)
+      values.push(user.active)
     }
 
     text = QueryBuildHelpers.createUpdateStatement('users', primeKeys, properties)
@@ -289,8 +295,8 @@ module.exports = {
       if (rows.length === 0) { // record to update does not exist
         retObj = {
           status  : 'error',
-          code    : 1006,
-          message : 'User of id "' + id + '" not found',
+          code    : 1025,
+          message : 'User of id "' + id + '" not found, id does not exist, id is not defined',
           detail  : 'Record of user to be updated does not exist', 
         }
       } else {
@@ -350,8 +356,8 @@ module.exports = {
       if (rows.length === 0) { // record to delete does not exist
         retObj = {
           status  : 'error',
-          code    : 1009,
-          message : 'User of id "' + id + '" not found',
+          code    : 1025,
+          message : 'User of id "' + id + '" not found, id is not defined',
           detail  : 'Record of user to be deleted does not exist', 
         }
       } else {
@@ -421,6 +427,102 @@ module.exports = {
     } finally {
       pool.end()
       debugDeleteAll('RETURNS: %o', retObj)
+      return retObj
+    }
+  },
+
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD:  async login(user) {}
+  //  Deletes all objects of a table.
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  (none)
+  // -----------------------------------------------------------------
+  // RETURNS: The deleted objects in the standard structure in the 
+  //  body of the http response:
+  //
+  //  in case of success:             in case of an error:
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj1}, ...]        code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////  
+
+  async login (user) {
+    debugLogin('INPUT: user=%o', user)
+    const pool = new Pool()
+    retObj = {}
+
+    // find user
+    text = 'SELECT * FROM users where username=$1'
+    var values = [user.username]
+
+    try {
+      const result = await pool.query(text, values)
+      // debugLogin('result.rows=%o', result.rows)
+      if (result.rows.length===0) {
+        pool.end()
+        retObj = {
+          status  : 'error',
+          code    : 1026,
+          message : 'No such user',
+          detail  : 'User of specified username not found'
+        }
+        debugLogin('RETURNS: %o', retObj)
+        return retObj
+      }
+
+      if (AuthenticationHelpers.comparePasswords(user.password, result.rows[0].password)) {
+        pool.end()
+        retObj = {
+          status : "success",
+          data   : [{
+            user : {
+              id       : result.rows[0].id,
+              username : result.rows[0].username,
+              password : result.rows[0].password,
+              email    : result.rows[0].email,
+              active   : result.rows[0].active
+            },
+            token : AuthenticationHelpers.jwtSignUser({
+              user: {
+                id       : result.rows[0].id,
+                username : result.rows[0].username
+              }
+            })
+          }]
+        }
+        debugLogin('RETURNS: %o', retObj)
+        return retObj
+      } else {
+        pool.end()
+        retObj = {
+          status : 'error',
+          code    : 1027,
+          message : 'Login failed',
+          detail  : 'Incorrect credentials, login failed'
+        }
+        debugLogin('RETURNS: %o', retObj)
+        return retObj
+      }
+    } catch(e) {
+      pool.end()
+      retObj = {
+        status  : 'error',
+        code    : 'PostgreSQL-' + e.code,
+        message : e.message,
+        detail  : e.detail
+      }
+      debugLogin('RETURNS: %o', retObj)
       return retObj
     }
   }

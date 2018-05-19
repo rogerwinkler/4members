@@ -1,19 +1,23 @@
 const Joi = require('joi')
-const debug = require('debug')('4members.AuthenticationControllerPolicy')
-const debugRegister = require('debug')('4members.AuthenticationControllerPolicy.register')
+const debug = require('debug')('4members.UsersControllerPolicy')
+const debugRegister = require('debug')('4members.UsersControllerPolicy.register')
 
 module.exports = {
   register (req, res, next) {
     debugRegister('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     const schema = {
+      id      : Joi.number(),
       username: Joi.string().alphanum().min(2).max(30).required(),
-      password: Joi.string().regex(/^[a-zA-Z0-9]{8,60}$/),
-      email   : Joi.string().email()
+      password: Joi.string().regex(/^[a-zA-Z0-9]{8,60}$/).required(),
+      email   : Joi.string().email(),
+      active  : Joi.boolean()
     }
     var retObj = {}
 
     const {error, value} = Joi.validate(req.body, schema)
-
+    debugRegister('error=%o', error)
+    debugRegister('value=%o', value)
+   
     if (error) {
       switch(error.details[0].context.key) {
         case 'username':
@@ -57,6 +61,7 @@ module.exports = {
           return res.status(400).send(retObj)
       }
     } else {
+      debugRegister('RETURNS: OK')
       next()
     }
   }

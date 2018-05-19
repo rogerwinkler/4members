@@ -130,15 +130,16 @@ module.exports = {
 
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async insert (id, name, dsc, active) {}
+  // METHOD: async insert (role) {}
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id:     [INT>0], id of object. If id is null, then
-  //          MAX(id)+1 is taken.
-  //  name:   [STRING, UNIQUE, NOT NULL], name of object to be inserted. 
-  //  dsc:    [STRING], description of object to be inserted.
-  //  active: [BOOL, DEFAULTS TO TRUE]
+  //  role    : Role object (see src/models/Role.js) with properties...
+  //    id:     [INT>0], id of object. If id is null, then
+  //            MAX(id)+1 is taken.
+  //    name:   [STRING, UNIQUE, NOT NULL], name of object to be inserted. 
+  //    dsc:    [STRING], description of object to be inserted.
+  //    active: [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
   //  body of the http response:
@@ -157,8 +158,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async insert (id, name, dsc, active) {
-    debugInsert('INPUT: id=%d, name="%s", dsc="%s", active=%s', id, name, dsc, active)
+  async insert (role) {
+    debugInsert('INPUT: role=%o', role)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -166,7 +167,7 @@ module.exports = {
     var   retObj = {}
 
     // active defaults to true if not explicitly set to false
-    const calcActive = ((active != false) ? true : false)
+    const calcActive = ((role.active != false) ? true : false)
 
     // db contraints check, so we don't have to: 
     //  - data types
@@ -175,7 +176,7 @@ module.exports = {
     //  - active is not null
 
     // find next id if id is not specified
-    if (id == null || id == undefined) {
+    if (role.id === null || role.id === undefined) {
       text = 'SELECT max(id)+1 AS nextid FROM roles'
       try {
         const { rows } = await pool.query(text)
@@ -192,11 +193,11 @@ module.exports = {
         return retObj
       }
     } else {
-      nextId = id
+      nextId = role.id
     }
 
     text = 'INSERT INTO roles(id, name, dsc, active) VALUES($1, $2, $3, $4) RETURNING *'
-    values = [nextId, name, dsc, calcActive]
+    values = [nextId, role.name, role.dsc, calcActive]
     try {
       const { rows } = await pool.query(text, values)
       retObj = {
@@ -224,10 +225,11 @@ module.exports = {
   //  Updates the object of the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id:     [INT>0, NOT NULL], id of object.
-  //  name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
-  //  dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
-  //  active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
+  //  role: Role object (see src/models/Role.js) with properties...
+  //    id:     [INT>0, NOT NULL], id of object.
+  //    name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
+  //    dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
+  //    active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 
   //  body of the http response:
@@ -246,8 +248,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async update (id, name, dsc, active) {
-    debugUpdate('INPUT: id=%d, name="%s", dsc="%s", active=%s', id, name, dsc, active)
+  async update (role) {
+    debugUpdate('INPUT: role=%o', role)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -261,21 +263,21 @@ module.exports = {
 
     // remove properties that are undefined
     var primeKeys = ['id']
-    values = [id]
+    values = [role.id]
     var properties = []
     // careful null===undefined ==> false, null==undefined ==> true
     // but null must be allowed!!!
-    if (name!==undefined) { 
+    if (role.name!==undefined) { 
       properties.push('name')
-      values.push(name)
+      values.push(role.name)
     }
-    if (dsc!==undefined) {
+    if (role.dsc!==undefined) {
       properties.push('dsc')
-      values.push(dsc)
+      values.push(role.dsc)
     }
-    if (active!==undefined) {
+    if (role.active!==undefined) {
       properties.push('active')
-      values.push(active)
+      values.push(role.active)
     }
 
     text = QueryBuildHelpers.createUpdateStatement('roles', primeKeys, properties)
@@ -288,7 +290,7 @@ module.exports = {
         retObj = {
           status  : 'error',
           code    : 1006,
-          message : 'Role of id "' + id + '" not found',
+          message : 'Role of id "' + id + '" not found, id is not defined',
           detail  : 'Record of role to be updated does not exist', 
         }
       } else {
