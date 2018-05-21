@@ -1,4 +1,9 @@
-const access_codes = require('./access_codes.json')
+var access_codes
+if (process.env.NODE_ENV === 'test') {
+  access_codes = require('./test_access_codes.json')
+} else {
+  access_codes = require('./access_codes.json')
+}
 const AccessCodesHelpers = require('../src/db/AccessCodesHelpers')
 const AccessCode = require('../src/models/AccessCode')
 const debugLoadAccessCodes = require('debug')('4members.seed_access_codes.loadAccessCodes')

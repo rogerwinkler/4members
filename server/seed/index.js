@@ -5,4 +5,8 @@
 	await seed_access_codes.loadAccessCodes()
 	const seed_users = require('./seed_users')
 	await seed_users.loadUsers()
+	const seed_dev_shortcuts = require('./seed_dev_shortcuts')
+	await seed_dev_shortcuts.loadDevShortcuts()
+	const seed_countries = require('./seed_countries')
+	await seed_countries.loadCountries()
 })().catch(e => console.error(e.stack))

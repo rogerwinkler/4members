@@ -1,4 +1,9 @@
-const roles = require('./roles.json')
+var roles
+if (process.env.NODE_ENV === 'test') {
+  roles = require('./test_roles.json')
+} else {
+  roles = require('./roles.json')
+}
 const RolesHelpers = require('../src/db/RolesHelpers')
 const Role = require('../src/models/Role')
 const debugLoadRoles = require('debug')('4members.seed_roles.loadRoles')
@@ -17,6 +22,6 @@ module.exports = {
         return
       }
     }
-    debugLoadRoles('RETURNS')
+    debugLoadRoles('RETURNS: OK')
   }
 }

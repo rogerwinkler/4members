@@ -1,0 +1,14 @@
+[
+	{"id": 1,"iso2": "CA","name": "Canada","active": true},
+	{"id": 2,"iso2": "CZ","name": "Czech Republic","active": true},
+	{"id": 3,"iso2": "DK","name": "Denmark","active": true},
+	{"id": 4,"iso2": "FI","name": "Finland","active": true},
+	{"id": 5,"iso2": "FR","name": "France","active": true},
+	{"id": 6,"iso2": "DE","name": "Germany","active": true},
+	{"id": 7,"iso2": "GR","name": "Greece","active": true},
+	{"id": 8,"iso2": "IT","name": "Italy","active": true},
+	{"id": 9,"iso2": "LU","name": "Luxembourg","active": true},
+	{"id": 10,"iso2": "SE","name": "Sweden","active": true},
+	{"id": 11,"iso2": "CH","name": "Switzerland","active": true},
+	{"id": 12,"iso2": "US","name": "United States","active": true}
+]

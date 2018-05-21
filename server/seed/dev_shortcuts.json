@@ -1,0 +1,43 @@
+[
+    {
+        "id"     : 1,
+        "shortcut": "addr",
+        "name"   : "address",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 2,
+        "shortcut": "addrs",
+        "name"   : "addresses",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 3,
+        "shortcut": "mem",
+        "name"   : "member",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 4,
+        "shortcut": "mems",
+        "name"   : "members",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 5,
+        "shortcut": "4m",
+        "name"   : "4members",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 6,
+        "shortcut": "dsc",
+        "name"   : "description",
+        "active" : true
+    }
+]

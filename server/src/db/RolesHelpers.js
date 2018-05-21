@@ -3,16 +3,12 @@ const QueryBuildHelpers = require('./QueryBuildHelpers')
 const debug = require('debug')('4members.RolesHelpers')
 const debugGetAll = require('debug')('4members.RolesHelpers.getAll')
 const debugGet = require('debug')('4members.RolesHelpers.get')
-const debugFindByName = require('debug')('4members.RolesHelpers.findByName')
-const debugFindById = require('debug')('4members.RolesHelpers.findById')
+// const debugFindByName = require('debug')('4members.RolesHelpers.findByName')
+// const debugFindById = require('debug')('4members.RolesHelpers.findById')
 const debugInsert = require('debug')('4members.RolesHelpers.insert')
 const debugUpdate = require('debug')('4members.RolesHelpers.update')
-const debugUpdateName = require('debug')('4members.RolesHelpers.updateName')
-const debugUpdateDsc = require('debug')('4members.RolesHelpers.updateDsc')
 const debugDelete = require('debug')('4members.RolesHelpers.delete')
 const debugDeleteAll = require('debug')('4members.RolesHelpers.deleteAll')
-const debugActivate = require('debug')('4members.RolesHelpers.activate')
-const debugInactivate = require('debug')('4members.RolesHelpers.inactivate')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
@@ -134,11 +130,11 @@ module.exports = {
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  role    : Role object (see src/models/Role.js) with properties...
+  //  role:     Role object (see src/models/Role.js)
   //    id:     [INT>0], id of object. If id is null, then
   //            MAX(id)+1 is taken.
-  //    name:   [STRING, UNIQUE, NOT NULL], name of object to be inserted. 
-  //    dsc:    [STRING], description of object to be inserted.
+  //    name:   [STRING, UNIQUE, NOT NULL] 
+  //    dsc:    [STRING], description
   //    active: [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
@@ -221,14 +217,14 @@ module.exports = {
   
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async update (id, name, dsc, active) {}
+  // METHOD: async update (role) {}
   //  Updates the object of the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  role: Role object (see src/models/Role.js) with properties...
-  //    id:     [INT>0, NOT NULL], id of object.
-  //    name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY], new name of object. 
-  //    dsc:    [STRING, if UNDEFINED=>NOT_UPDATED], description of object
+  //  role:     Role object (see src/models/Role.js)
+  //    id:     [INT>0, NOT NULL]
+  //    name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY] 
+  //    dsc:    [STRING, if UNDEFINED=>NOT_UPDATED]
   //    active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 

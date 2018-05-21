@@ -1,4 +1,9 @@
-const users = require('./users.json')
+var users
+if (process.env.NODE_ENV === 'test') {
+  users = require('./test_users.json')
+} else {
+  users = require('./users.json')
+}
 const UsersHelpers = require('../src/db/UsersHelpers')
 const User = require('../src/models/User')
 const debugLoadUsers = require('debug')('4members.seed_roles.loadUsers')
@@ -17,6 +22,6 @@ module.exports = {
         return
       }
     }
-    debugLoadUsers('RETURNS')
+    debugLoadUsers('RETURNS: OK')
   }
 }

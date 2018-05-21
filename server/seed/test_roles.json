@@ -1,0 +1,20 @@
+[
+    {
+        "id"     : 1,
+        "name"   : "admin",
+        "dsc"    : "can create/enable/disable users and their privileges",
+        "active" : true
+    },
+    {
+        "id"     : 2,
+        "name"   : "superuser",
+        "dsc"    : "can create/update/delete code tables and customization parameters",
+        "active" : true
+    },
+    {
+        "id"     : 3,
+        "name"   : "user",
+        "dsc"    : "regular user of the application",
+        "active" : true
+    }
+]

@@ -1,15 +1,12 @@
 const { Pool } = require('pg')
 const QueryBuildHelpers = require('./QueryBuildHelpers')
-const AuthenticationHelpers = require('./AuthenticationHelpers')
-const debug = require('debug')('4members.UsersHelpers')
-const debugGetAll = require('debug')('4members.UsersHelpers.getAll')
-const debugGet = require('debug')('4members.UsersHelpers.get')
-const debugInsert = require('debug')('4members.UsersHelpers.insert')
-const debugUpdate = require('debug')('4members.UsersHelpers.update')
-const debugDelete = require('debug')('4members.UsersHelpers.delete')
-const debugDeleteAll = require('debug')('4members.UsersHelpers.deleteAll')
-const debugLogin = require('debug')('4members.UsersHelpers.login')
-
+const debug = require('debug')('4members.DevShortcutsHelpers')
+const debugGetAll = require('debug')('4members.DevShortcutsHelpers.getAll')
+const debugGet = require('debug')('4members.DevShortcutsHelpers.get')
+const debugInsert = require('debug')('4members.DevShortcutsHelpers.insert')
+const debugUpdate = require('debug')('4members.DevShortcutsHelpers.update')
+const debugDelete = require('debug')('4members.DevShortcutsHelpers.delete')
+const debugDeleteAll = require('debug')('4members.DevShortcutsHelpers.deleteAll')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
@@ -41,7 +38,7 @@ module.exports = {
   async getAll () {
     debugGetAll('INPUT: (none)')
     const pool = new Pool()
-    const text = 'SELECT * FROM users'
+    const text = 'SELECT * FROM dev_shortcuts'
     var retObj = {}    
     try {
       const { rows } = await pool.query(text)
@@ -92,7 +89,7 @@ module.exports = {
   async get (id) {
     debugGet('INPUT: id=%d', id)
     const pool = new Pool()
-    const text = 'SELECT * FROM users where id=$1'
+    const text = 'SELECT * FROM dev_shortcuts where id=$1'
     const values = [id]
     var retObj = {}    
     try {
@@ -100,9 +97,9 @@ module.exports = {
       if (rows.length === 0) {
         retObj = {
           status  : 'error',
-          code    : 1008,
-          message : 'User not found',
-          detail  : 'User of given id not found in table "users"'
+          code    : 1031,
+          message : 'Development shortcut not found',
+          detail  : 'Development shortcut of given id not found in table "dev_shortcuts"'
         }
       } else {
         retObj = {
@@ -127,17 +124,16 @@ module.exports = {
 
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async insert (user) {}
+  // METHOD: async insert (devShortcut) {}
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  user    : User object (see src/models/User.js) with properties...
-  //    id      : [INT>0], id of object. If id is null, then
-  //              MAX(id)+1 is taken.
-  //    username: [STRING, UNIQUE, NOT NULL], username. 
-  //    password: [STRING, NOT NULL], password.
-  //    email   : [STRING], email address
-  //    active  : [BOOL, DEFAULTS TO TRUE]
+  //  devShortcut : Development shortcut object (see src/models/Development shortcut.js) with properties...
+  //    id:         [INT>0], id of object. If id is null, then
+  //                MAX(id)+1 is taken.
+  //    shortcut:   [STRING<=8, UNIQUE, NOT NULL]
+  //    name:       [STRING<=32, UNIQUE, NOT NULL] 
+  //    active:     [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
   //  body of the http response:
@@ -156,8 +152,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async insert (user) {
-    debugInsert('INPUT: user=%o', user)
+  async insert (devShortcut) {
+    debugInsert('INPUT: devShortcut=%o', devShortcut)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -165,17 +161,18 @@ module.exports = {
     var   retObj = {}
 
     // active defaults to true if not explicitly set to false
-    const calcActive = ((user.active != false) ? true : false)
+    const calcActive = ((devShortcut.active != false) ? true : false)
 
     // db contraints check, so we don't have to: 
     //  - data types
     //  - id is unique
-    //  - username is unique and not null, 
+    //  - shortcut is unique and not null
+    //  - name is unique and not null
     //  - active is not null
 
     // find next id if id is not specified
-    if (user.id === null || user.id === undefined) {
-      text = 'SELECT max(id)+1 AS nextid FROM users'
+    if (devShortcut.id === null || devShortcut.id === undefined) {
+      text = 'SELECT max(id)+1 AS nextid FROM dev_shortcuts'
       try {
         const { rows } = await pool.query(text)
         nextId = rows[0].nextid || 1
@@ -191,11 +188,11 @@ module.exports = {
         return retObj
       }
     } else {
-      nextId = user.id
+      nextId = devShortcut.id
     }
 
-    text = 'INSERT INTO users(id, username, password, email, active) VALUES($1, $2, $3, $4, $5) RETURNING *'
-    values = [nextId, user.username, AuthenticationHelpers.hashPassword(user.password), user.email, calcActive]
+    text = 'INSERT INTO dev_shortcuts(id, shortcut, name, active) VALUES($1, $2, $3, $4) RETURNING *'
+    values = [nextId, devShortcut.shortcut, devShortcut.name, calcActive]
     try {
       const { rows } = await pool.query(text, values)
       retObj = {
@@ -219,15 +216,16 @@ module.exports = {
   
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async update (user) {}
-  //  Updates the object of the given id.
+  // METHOD: async update (devShortcut) {}
+  //  Updates the object of the given devShortcut.id
   // -----------------------------------------------------------------
-  // PARAMS: 
-  //  user: User object (see src/models/User.js) with properties... 
-  //    id:       [INT>0, NOT NULL], id of object.
-  //    username: [STRING, UNIQUE, NOT NULL, NOT EMPTY], username 
-  //    password: [STRING, HASHED], password
-  //    active:   [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
+  // PARAMS:  
+  //  devShortcut: Development shortcut (see src/models/DevShortcut.js) with properties...
+  //    id:         [INT>0], id of object. If id is null, then
+  //                MAX(id)+1 is taken.
+  //    shortcut:   [STRING<=8, if UNDEFINED=>NOT_UPDATED]
+  //    name:       [STRING<=32, if UNDEFINED=>NOT_UPDATED] 
+  //    active:     [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 
   //  body of the http response:
@@ -246,8 +244,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async update (user) {
-    debugUpdate('INPUT: user=%o', user)
+  async update (devShortcut) {
+    debugUpdate('INPUT: devShortcut=%o', devShortcut)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -261,28 +259,24 @@ module.exports = {
 
     // remove properties that are undefined
     var primeKeys = ['id']
-    values = [user.id]
+    values = [devShortcut.id]
     var properties = []
     // careful null===undefined ==> false, null==undefined ==> true
     // but null must be allowed!!!
-    if (user.username!==undefined) { 
-      properties.push('username')
-      values.push(user.username)
+    if (devShortcut.shortcut!==undefined) {
+      properties.push('shortcut')
+      values.push(devShortcut.shortcut)
     }
-    if (user.password!==undefined) {
-      properties.push('password')
-      values.push(AuthenticationHelpers.hashPassword(user.password))
+    if (devShortcut.name!==undefined) { 
+      properties.push('name')
+      values.push(devShortcut.name)
     }
-    if (user.email!==undefined) {
-      properties.push('email')
-      values.push(user.email)
-    }
-    if (user.active!==undefined) {
+    if (devShortcut.active!==undefined) {
       properties.push('active')
-      values.push(user.active)
+      values.push(devShortcut.active)
     }
 
-    text = QueryBuildHelpers.createUpdateStatement('users', primeKeys, properties)
+    text = QueryBuildHelpers.createUpdateStatement('dev_shortcuts', primeKeys, properties)
     debugUpdate('Query: text="%s"', text)
     debugUpdate('Query: values=%o', values)
     // update
@@ -291,9 +285,9 @@ module.exports = {
       if (rows.length === 0) { // record to update does not exist
         retObj = {
           status  : 'error',
-          code    : 1025,
-          message : 'User of id "' + id + '" not found, id does not exist, id is not defined',
-          detail  : 'Record of user to be updated does not exist', 
+          code    : 1033,
+          message : 'Development shortcut of id "' + id + '" not found, id is not defined',
+          detail  : 'Development shortcut to be updated does not exist', 
         }
       } else {
         retObj = {
@@ -322,7 +316,7 @@ module.exports = {
   //  Deletes the object with the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  id: [INT>0, NOT NULL], id of object to delete
+  //  id: [INT>0, NOT NULL], id of object to be deleted.
   // -----------------------------------------------------------------
   // RETURNS: The deleted object in the standard structure in the 
   //  body of the http response:
@@ -344,7 +338,7 @@ module.exports = {
   async delete (id) {
     debugDelete('INPUT: id=' + id)
     const pool = new Pool()
-    var   text = 'DELETE FROM users WHERE id=$1 RETURNING *'
+    var   text = 'DELETE FROM dev_shortcuts WHERE id=$1 RETURNING *'
     var   values = [id]
     var   retObj = {}
     try {
@@ -352,9 +346,9 @@ module.exports = {
       if (rows.length === 0) { // record to delete does not exist
         retObj = {
           status  : 'error',
-          code    : 1025,
-          message : 'User of id "' + id + '" not found, id is not defined',
-          detail  : 'Record of user to be deleted does not exist', 
+          code    : 1032,
+          message : 'Development shortcut of id "' + id + '" not found',
+          detail  : 'Development shortcut to be deleted does not exist', 
         }
       } else {
         retObj = {
@@ -405,7 +399,7 @@ module.exports = {
   async deleteAll () {
     debugDeleteAll('INPUT: (none)')
     const pool = new Pool()
-    var   text = 'DELETE FROM users RETURNING *'
+    var   text = 'DELETE FROM dev_shortcuts RETURNING *'
     var   retObj = {}
     try {
       const { rows } = await pool.query(text)
@@ -423,102 +417,6 @@ module.exports = {
     } finally {
       pool.end()
       debugDeleteAll('RETURNS: %o', retObj)
-      return retObj
-    }
-  },
-
-
-  ////////////////////////////////////////////////////////////////////
-  // -----------------------------------------------------------------
-  // METHOD:  async login(user) {}
-  //  Deletes all objects of a table.
-  // -----------------------------------------------------------------
-  // PARAMS:  
-  //  (none)
-  // -----------------------------------------------------------------
-  // RETURNS: The deleted objects in the standard structure in the 
-  //  body of the http response:
-  //
-  //  in case of success:             in case of an error:
-  //
-  //    {                             {
-  //      status : "success",           status : "error",
-  //      data   : [{obj1}, ...]        code:  : "an error code..."
-  //    }                               message: "an error message..."
-  //                                    detail : "detailed error message"
-  //                                  }
-  //  
-  //  ...where in case of an error, "status" and "message" are required,
-  //  and "code" and "detail" are optional.
-  // -----------------------------------------------------------------
-  ////////////////////////////////////////////////////////////////////  
-
-  async login (user) {
-    debugLogin('INPUT: user=%o', user)
-    const pool = new Pool()
-    retObj = {}
-
-    // find user
-    text = 'SELECT * FROM users where username=$1'
-    var values = [user.username]
-
-    try {
-      const result = await pool.query(text, values)
-      // debugLogin('result.rows=%o', result.rows)
-      if (result.rows.length===0) {
-        pool.end()
-        retObj = {
-          status  : 'error',
-          code    : 1026,
-          message : 'No such user',
-          detail  : 'User of specified username not found'
-        }
-        debugLogin('RETURNS: %o', retObj)
-        return retObj
-      }
-
-      if (AuthenticationHelpers.comparePasswords(user.password, result.rows[0].password)) {
-        pool.end()
-        retObj = {
-          status : "success",
-          data   : [{
-            user : {
-              id       : result.rows[0].id,
-              username : result.rows[0].username,
-              password : result.rows[0].password,
-              email    : result.rows[0].email,
-              active   : result.rows[0].active
-            },
-            token : AuthenticationHelpers.jwtSignUser({
-              user: {
-                id       : result.rows[0].id,
-                username : result.rows[0].username
-              }
-            })
-          }]
-        }
-        debugLogin('RETURNS: %o', retObj)
-        return retObj
-      } else {
-        pool.end()
-        retObj = {
-          status : 'error',
-          code    : 1027,
-          message : 'Login failed',
-          detail  : 'Incorrect credentials, login failed'
-        }
-        debugLogin('RETURNS: %o', retObj)
-        return retObj
-      }
-    } catch(e) {
-      pool.end()
-      retObj = {
-        status  : 'error',
-        code    : 'PostgreSQL-' + e.code,
-        message : e.message,
-        detail  : e.detail
-      }
-      debugLogin('RETURNS: %o', retObj)
       return retObj
     }
   }

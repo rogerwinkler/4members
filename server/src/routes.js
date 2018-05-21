@@ -4,6 +4,8 @@ const RolesController = require('./controllers/RolesController')
 const AccessCodesController = require('./controllers/AccessCodesController')
 const DefaultController = require('./controllers/DefaultController')
 const AuthenticationHelpers = require('./db/AuthenticationHelpers')
+const DevShortcutsController = require('./controllers/DevShortcutsController')
+const CountriesController = require('./controllers/CountriesController')
 
 module.exports = (app) => {
 
@@ -68,8 +70,9 @@ module.exports = (app) => {
     AuthenticationHelpers.verifyToken,
     RolesController.delete)
 
+
   /////////////////////////////////////////////
-  // access codes 
+  // access_codes 
   app.get('/api/v0.01/access_codes',
     AuthenticationHelpers.verifyToken,
     AccessCodesController.getAll)
@@ -93,6 +96,61 @@ module.exports = (app) => {
   app.delete('/api/v0.01/access_codes/:id',
     AuthenticationHelpers.verifyToken,
     AccessCodesController.delete)
+
+
+  /////////////////////////////////////////////
+  // dev_shortcuts 
+  app.get('/api/v0.01/dev_shortcuts',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.getAll)
+
+  app.get('/api/v0.01/dev_shortcuts/:id',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.get)
+
+  app.post('/api/v0.01/dev_shortcuts',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.insert)
+
+  app.put('/api/v0.01/dev_shortcuts/:id',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.update)
+
+  app.delete('/api/v0.01/dev_shortcuts',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.deleteAll)
+
+  app.delete('/api/v0.01/dev_shortcuts/:id',
+    AuthenticationHelpers.verifyToken,
+    DevShortcutsController.delete)
+
+
+  /////////////////////////////////////////////
+  // countries 
+  app.get('/api/v0.01/countries',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.getAll)
+
+  app.get('/api/v0.01/countries/:id',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.get)
+
+  app.post('/api/v0.01/countries',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.insert)
+
+  app.put('/api/v0.01/countries/:id',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.update)
+
+  app.delete('/api/v0.01/countries',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.deleteAll)
+
+  app.delete('/api/v0.01/countries/:id',
+    AuthenticationHelpers.verifyToken,
+    CountriesController.delete)
+
 
   /////////////////////////////////////////////
   // catch-all for get, post, put, delete & patch...

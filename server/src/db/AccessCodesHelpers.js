@@ -3,16 +3,10 @@ const QueryBuildHelpers = require('./QueryBuildHelpers')
 const debug = require('debug')('4members.AccessCodeHelpers')
 const debugGetAll = require('debug')('4members.AccessCodeHelpers.getAll')
 const debugGet = require('debug')('4members.AccessCodeHelpers.get')
-const debugFindByName = require('debug')('4members.AccessCodeHelpers.findByName')
-const debugFindById = require('debug')('4members.AccessCodeHelpers.findById')
 const debugInsert = require('debug')('4members.AccessCodeHelpers.insert')
 const debugUpdate = require('debug')('4members.AccessCodeHelpers.update')
-const debugUpdateName = require('debug')('4members.AccessCodeHelpers.updateName')
-const debugUpdateDsc = require('debug')('4members.AccessCodeHelpers.updateDsc')
 const debugDelete = require('debug')('4members.AccessCodeHelpers.delete')
 const debugDeleteAll = require('debug')('4members.AccessCodeHelpers.deleteAll')
-const debugActivate = require('debug')('4members.AccessCodeHelpers.activate')
-const debugInactivate = require('debug')('4members.AccessCodeHelpers.inactivate')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////

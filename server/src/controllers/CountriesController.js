@@ -1,14 +1,14 @@
-const RolesHelpers = require('../db/RolesHelpers')
+const CountriesHelpers = require('../db/CountriesHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
-const Role = require('../models/Role')
+const Country = require('../models/Country')
 
-const debug          = require('debug')('4members.RolesController')
-const debugGetAll    = require('debug')('4members.RolesController.getAll')
-const debugGet       = require('debug')('4members.RolesController.get')
-const debugInsert    = require('debug')('4members.RolesController.insert')
-const debugUpdate    = require('debug')('4members.RolesController.update')
-const debugDelete    = require('debug')('4members.RolesController.delete')
-const debugDeleteAll = require('debug')('4members.RolesController.deleteAll')
+const debug          = require('debug')('4members.CountriesController')
+const debugGetAll    = require('debug')('4members.CountriesController.getAll')
+const debugGet       = require('debug')('4members.CountriesController.get')
+const debugInsert    = require('debug')('4members.CountriesController.insert')
+const debugUpdate    = require('debug')('4members.CountriesController.update')
+const debugDelete    = require('debug')('4members.CountriesController.delete')
+const debugDeleteAll = require('debug')('4members.CountriesController.deleteAll')
 
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
     debugGetAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     var retObj = {}
      // select
-    const result = await RolesHelpers.getAll()
+    const result = await CountriesHelpers.getAll()
     if (result.status=='error') {
       debugGetAll('RETURNS: sending 400... %o', result)
       return res.status(400).send(result)
@@ -83,7 +83,7 @@ module.exports = {
 
   async get (req, res) {
     debugGet('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-    const result = await RolesHelpers.get(req.params.id)
+    const result = await CountriesHelpers.get(req.params.id)
     if (result.status==='error') {
       debugGet('RETURNS: sending 404... %o', result)
       return res.status(404).send(result)
@@ -126,22 +126,22 @@ module.exports = {
     var retObj = {}
 
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','name','dsc','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','iso2','name','active'])
     if (result1.status == 'error') {
       debugInsert('RETURNS: sending 400... %o', result1)
       return res.status(400).send(result1)
     }
 
     // check which properties of query object are provided and set accordingly
-    const role = new Role (
+    const country = new Country (
       (req.body.id === undefined     ? null : req.body.id    ),
+      (req.body.iso2 === undefined   ? null : req.body.iso2  ),
       (req.body.name === undefined   ? null : req.body.name  ),
-      (req.body.dsc === undefined    ? null : req.body.dsc   ),
       (req.body.active === undefined ? null : req.body.active)
     )
 
     // insert
-    const result2 = await RolesHelpers.insert(role)
+    const result2 = await CountriesHelpers.insert(country)
     if (result2.status === 'error') {
       debugInsert('RETURNS: sending 400... %o', result2)
       return res.status(400).send(result2)
@@ -204,14 +204,14 @@ module.exports = {
       return res.status(404).send(retObj)
     }
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['name','dsc','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['iso2','name','active'])
     if (result1.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result1)
       return res.status(404).send(result1)
     }
     // update
-    const role = new Role(req.params.id, req.body.name, req.body.dsc, req.body.active)
-    const result2 = await RolesHelpers.update(role)
+    const country = new Country(req.params.id, req.body.iso2, req.body.name, req.body.active)
+    const result2 = await CountriesHelpers.update(country)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
       return res.status(404).send(result2)
@@ -293,7 +293,7 @@ module.exports = {
       debugUpdate('RETURNS: sending 404... %o', retObj)
       return res.status(404).send(retObj)
     }
-    const result = await RolesHelpers.delete(req.params.id)
+    const result = await CountriesHelpers.delete(req.params.id)
     if (result.status == 'error') {
       debugDeleteAll('RETURNS: sending 404... %o', result)
       return res.status(404).send(result)

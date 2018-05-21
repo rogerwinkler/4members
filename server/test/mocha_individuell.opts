@@ -1,0 +1,5 @@
+test/**/test_countries.js
+test/**/test_dev_shortcuts.js
+test/**/test_access_codes.js
+test/**/test_roles.js
+test/**/test_users.js

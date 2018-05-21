@@ -1,18 +1,18 @@
 process.env.NODE_ENV = 'test'
 
-const seed_roles = require('../../seed/seed_roles')
+const seed_countries = require('../../seed/seed_countries')
 const chai = require('chai');
 const should = chai.should();
 const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const server = require('../../src/app');
 
-describe('routes : /api/v0.01/roles', function() {
+describe('routes : /api/v0.01/countries', function() {
 
   var testToken = ''
 
   beforeEach( async function() {
-    await seed_roles.loadRoles();
+    await seed_countries.loadCountries();
     // done();
   });
 
@@ -47,21 +47,22 @@ describe('routes : /api/v0.01/roles', function() {
 
 
 
-
   /////////////////////////////////////////////////////////
   // getAll
-  describe('GET /api/v0.01/roles', () => {
-    it('should respond with all roles', (done) => {
+  describe('GET /api/v0.01/countries', () => {
+    it('should respond with all countries', (done) => {
       chai.request(server)
-      .get('/api/v0.01/roles')
+      .get('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         should.not.exist(err);
         res.status.should.equal(200);
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
-        res.body.data.length.should.eql(3);
-        res.body.data[0].should.include.keys('id','name','dsc','active');
+        res.body.data.length.should.eql(12);
+        res.body.data[0].should.include.keys(
+          'id', 'iso2', 'name', 'active'
+        );
         done();
       });
     });
@@ -69,13 +70,12 @@ describe('routes : /api/v0.01/roles', function() {
 
 
 
-
   /////////////////////////////////////////////////////////
   // get(id)
-  describe('GET /api/v0.01/roles/:id', () => {
-    it('should respond with a single role', (done) => {
+  describe('GET /api/v0.01/countries/:id', () => {
+    it('should respond with a single country', (done) => {
       chai.request(server)
-      .get('/api/v0.01/roles/1')
+      .get('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         should.not.exist(err);
@@ -83,18 +83,16 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data.length.should.eql(1);
-        res.body.data[0].should.include.keys('id','name','dsc','active');
-        res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('admin');
-        res.body.data[0].dsc.should.equal('can create/enable/disable users and their privileges');
-        res.body.data[0].active.should.equal(true);
+        res.body.data[0].should.include.keys(
+          'id', 'iso2', 'name', 'active'
+        );
         done();
       });
     });
 
-    it('should throw an error if the role id is null', (done) => {
+    it('should throw an error if the country id is null', (done) => {
       chai.request(server)
-      .get(`/api/v0.01/roles/${null}`)
+      .get(`/api/v0.01/countries/${null}`)
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         res.status.should.equal(404);
@@ -104,14 +102,14 @@ describe('routes : /api/v0.01/roles', function() {
       });
     });
 
-    it('should throw an error if the role is not found', (done) => {
+    it('should throw an error if the country is not found', (done) => {
       chai.request(server)
-      .get(`/api/v0.01/roles/4`)
+      .get(`/api/v0.01/countries/1000`)
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         res.status.should.equal(404);
         res.body.status.should.eql('error');
-        res.body.message.should.eql('Role not found');
+        res.body.message.should.eql('Country not found');
         done();
       });
     });
@@ -121,16 +119,16 @@ describe('routes : /api/v0.01/roles', function() {
 
 
   /////////////////////////////////////////////////////////
-  // insert(role)
-  describe('POST /api/v0.01/roles', () => {
-    it('should respond with a success message along with a single role that was added', (done) => {
+  // insert(country)
+  describe('POST /api/v0.01/countries', () => {
+    it('should respond with a success message along with a single country that was added', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        id     : 4,
-        name   : 'someTestAdmin',
-        dsc    : 'just used for testing',
+        id     : 1000,
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : true
       })
       .end((err, res) => {
@@ -138,10 +136,10 @@ describe('routes : /api/v0.01/roles', function() {
         res.status.should.equal(201);
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
-        res.body.data[0].should.include.keys('id','name','dsc','active');
-        res.body.data[0].id.should.equal(4);
-        res.body.data[0].name.should.equal('someTestAdmin');
-        res.body.data[0].dsc.should.equal('just used for testing');
+        res.body.data[0].should.include.keys('id','iso2','name','active');
+        res.body.data[0].id.should.equal(1000);
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(true);
         done();
       });
@@ -149,58 +147,58 @@ describe('routes : /api/v0.01/roles', function() {
 
     it('should generate id automatically when not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someOtherTestAdmin',
-        dsc    : 'just used for testing',
-        active : false
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
+        active : true
       })
       .end((err, res) => {
         should.not.exist(err);
         res.status.should.equal(201);
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
-        res.body.data[0].should.include.keys('id','name','dsc','active');
-        res.body.data[0].id.should.equal(4);
-        res.body.data[0].name.should.equal('someOtherTestAdmin');
-        res.body.data[0].dsc.should.equal('just used for testing');
-        res.body.data[0].active.should.equal(false);
+        res.body.data[0].should.include.keys('id','iso2','name','active');
+        res.body.data[0].id.should.equal(13);
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
+        res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
     it('should set active to true (default) if not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        id     : 6,
-        name   : 'stillAnotherTestAdmin',
-        dsc    : 'just used for testing',
+        id     : 1000,
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone'
       })
       .end((err, res) => {
         should.not.exist(err);
         res.status.should.equal(201);
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
-        res.body.data[0].should.include.keys('id','name','dsc','active');
-        res.body.data[0].id.should.equal(6);
-        res.body.data[0].name.should.equal('stillAnotherTestAdmin');
-        res.body.data[0].dsc.should.equal('just used for testing');
+        res.body.data[0].should.include.keys('id','iso2','name','active');
+        res.body.data[0].id.should.equal(1000);
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
-    it('should throw an error if the role already exists', (done) => {
+    it('should throw an error if the country already exists', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
         id     : 1,
-        name   : 'someTestAdmin',
-        dsc    : 'just used for testing',
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : true
       })
       .end((err, res) => {
@@ -211,13 +209,30 @@ describe('routes : /api/v0.01/roles', function() {
       });
     });
 
-    it('should throw an error if name is not provided', (done) => {
+    it('should throw an error if iso2 is not provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        id     : 7,
-        dsc    : 'just used for testing',
+        id     : 1000,
+        name   : 'Zome New Zone',
+        active : true
+      })
+      .end((err, res) => {
+        res.status.should.equal(400);
+        res.body.status.should.eql('error');
+        res.body.message.should.include('null value in column', 'violates not-null constraint');
+        done();
+      });
+    });
+
+    it('should throw an error if name is not provided', (done) => {
+      chai.request(server)
+      .post('/api/v0.01/countries')
+      .set('Authorization', 'Bearer ' + testToken)
+      .send({
+        id     : 1000,
+        iso2   : 'ZZ',
         active : true
       })
       .end((err, res) => {
@@ -230,11 +245,12 @@ describe('routes : /api/v0.01/roles', function() {
 
     it('should throw an error if wrong property is provided', (done) => {
       chai.request(server)
-      .post('/api/v0.01/roles')
+      .post('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        hugo   : 7,
-        dsc    : 'just used for testing',
+        hugo   : 1000,
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : true
       })
       .end((err, res) => {
@@ -250,15 +266,15 @@ describe('routes : /api/v0.01/roles', function() {
 
 
   /////////////////////////////////////////////////////////
-  // update(role)
-  describe('PUT /api/v0.01/roles/1', () => {
-    it('should respond with a success message along with a single role that was updated', (done) => {
+  // update(country)
+  describe('PUT /api/v0.01/countries/1', () => {
+    it('should respond with a success message along with a single country that was updated', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someTestAdmin',
-        dsc    : 'just used for testing',
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : false
       })
       .end((err, res) => {
@@ -266,21 +282,21 @@ describe('routes : /api/v0.01/roles', function() {
         res.status.should.equal(200);
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
-        res.body.data[0].should.include.keys('id','name','dsc','active');
+        res.body.data[0].should.include.keys('id','iso2','name','active');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('someTestAdmin');
-        res.body.data[0].dsc.should.equal('just used for testing');
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(false);
         done();
       });
     });
 
-    it('should change role\'s name and just role\'s name', (done) => {
+    it('should change country\'s name and just country\'s name', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someOtherTestAdmin'
+        name   : 'Zome New Zone'
       })
       .end((err, res) => {
         should.not.exist(err);
@@ -288,19 +304,19 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('someOtherTestAdmin');
-        res.body.data[0].dsc.should.equal('can create/enable/disable users and their privileges');
+        res.body.data[0].iso2.should.equal('CA');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
-    it('should change role\'s description and just role\'s description', (done) => {
+    it('should change country\'s iso2 and just country\'s iso2', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        dsc : 'some other description'
+        iso2 : 'ZZ'
       })
       .end((err, res) => {
         should.not.exist(err);
@@ -308,16 +324,16 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('admin');
-        res.body.data[0].dsc.should.equal('some other description');
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Canada');
         res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
-    it('should change role\'s property active and just role\'s property active', (done) => {
+    it('should change country\'s property active and just country\'s property active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
         active : false
@@ -328,19 +344,19 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('admin');
-        res.body.data[0].dsc.should.equal('can create/enable/disable users and their privileges');
+        res.body.data[0].iso2.should.equal('CA');
+        res.body.data[0].name.should.equal('Canada');
         res.body.data[0].active.should.equal(false);
         done();
       });
     });
 
-    it('should change role\'s properties dsc and active', (done) => {
+    it('should change country\'s properties iso2 and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        dsc    : 'some description',
+        iso2   : 'ZZ',
         active : false
       })
       .end((err, res) => {
@@ -349,16 +365,16 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('admin');
-        res.body.data[0].dsc.should.equal('some description');
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Canada');
         res.body.data[0].active.should.equal(false);
         done();
       });
     });
 
-    it('should change role\'s properties name and active', (done) => {
+    it('should change country\'s properties name and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
         name   : 'someNewName',
@@ -370,20 +386,20 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
+        res.body.data[0].iso2.should.equal('CA');
         res.body.data[0].name.should.equal('someNewName');
-        res.body.data[0].dsc.should.equal('can create/enable/disable users and their privileges');
         res.body.data[0].active.should.equal(false);
         done();
       });
     });
 
-    it('should change role\'s properties name and dsc', (done) => {
+    it('should change country\'s properties iso2 and name', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name : 'someNewName',
-        dsc  : 'some new description'
+        iso2 : 'ZZ',
+        name : 'Zome New Zone'
       })
       .end((err, res) => {
         should.not.exist(err);
@@ -391,20 +407,20 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('someNewName');
-        res.body.data[0].dsc.should.equal('some new description');
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
-    it('should change role\'s properties name, dsc and active', (done) => {
+    it('should change country\'s properties iso2, name and active', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someNewName',
-        dsc    : 'some new description',
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : false
       })
       .end((err, res) => {
@@ -413,20 +429,20 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('someNewName');
-        res.body.data[0].dsc.should.equal('some new description');
+        res.body.data[0].iso2.should.equal('ZZ');
+        res.body.data[0].name.should.equal('Zome New Zone');
         res.body.data[0].active.should.equal(false);
         done();
       });
     });
 
-    it('should throw an error if the role does not exist', (done) => {
+    it('should throw an error if the country does not exist', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/4')
+      .put('/api/v0.01/countries/1000')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someTestAdmin',
-        dsc    : 'just used for testing',
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : true
       })
       .end((err, res) => {
@@ -439,11 +455,11 @@ describe('routes : /api/v0.01/roles', function() {
 
     it('should throw an error if no param :id is provided', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles')
+      .put('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
-        name   : 'someTestAdmin',
-        dsc    : 'just used for testing',
+        iso2   : 'ZZ',
+        name   : 'Zome New Zone',
         active : true
       })
       .end((err, res) => {
@@ -456,7 +472,7 @@ describe('routes : /api/v0.01/roles', function() {
 
     it('should throw an error if no properties provided', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({})
       .end((err, res) => {
@@ -467,9 +483,24 @@ describe('routes : /api/v0.01/roles', function() {
       });      
     });
 
+    it('should throw an error if iso2 is null', (done) => {
+      chai.request(server)
+      .put('/api/v0.01/countries/1')
+      .set('Authorization', 'Bearer ' + testToken)
+      .send({
+        iso2: null
+      })
+      .end((err, res) => {
+        res.status.should.equal(404);
+        res.body.status.should.equal('error');
+        res.body.message.should.include('null value in column', 'violates not-null constraint');
+        done();
+      });      
+    });
+
     it('should throw an error if name is null', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
         name: null
@@ -484,7 +515,7 @@ describe('routes : /api/v0.01/roles', function() {
 
     it('should throw an error if active is null', (done) => {
       chai.request(server)
-      .put('/api/v0.01/roles/1')
+      .put('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .send({
         active: null
@@ -503,10 +534,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // deleteAll
-  describe('DELETE /api/v0.01/roles', () => {
-    it('should throw an error if all roles are unconciously to be deleted', (done) => {
+  describe('DELETE /api/v0.01/countries', () => {
+    it('should throw an error if all countries are unconciously to be deleted', (done) => {
       chai.request(server)
-      .delete('/api/v0.01/roles')
+      .delete('/api/v0.01/countries')
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         res.status.should.equal(405);
@@ -522,10 +553,10 @@ describe('routes : /api/v0.01/roles', function() {
 
   /////////////////////////////////////////////////////////
   // delete(id)
-  describe('DELETE /api/v0.01/roles/:id', () => {
-    it('should respond with the deleted role', (done) => {
+  describe('DELETE /api/v0.01/countries/:id', () => {
+    it('should respond with the deleted country', (done) => {
       chai.request(server)
-      .delete('/api/v0.01/roles/1')
+      .delete('/api/v0.01/countries/1')
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         should.not.exist(err);
@@ -533,18 +564,20 @@ describe('routes : /api/v0.01/roles', function() {
         res.type.should.equal('application/json');
         res.body.status.should.eql('success');
         res.body.data.length.should.eql(1);
-        res.body.data[0].should.include.keys('id','name','dsc','active');
+        res.body.data[0].should.include.keys(
+          'id', 'iso2', 'name', 'active'
+        );
         res.body.data[0].id.should.equal(1);
-        res.body.data[0].name.should.equal('admin');
-        res.body.data[0].dsc.should.equal('can create/enable/disable users and their privileges');
+        res.body.data[0].iso2.should.equal('CA');
+        res.body.data[0].name.should.equal('Canada');
         res.body.data[0].active.should.equal(true);
         done();
       });
     });
 
-    it('should throw an error if the role id is null', (done) => {
+    it('should throw an error if the country id is null', (done) => {
       chai.request(server)
-      .delete(`/api/v0.01/roles/${null}`)
+      .delete(`/api/v0.01/countries/${null}`)
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         res.status.should.equal(404);
@@ -554,14 +587,14 @@ describe('routes : /api/v0.01/roles', function() {
       });
     });
 
-    it('should throw an error if the role is not found', (done) => {
+    it('should throw an error if the country is not found', (done) => {
       chai.request(server)
-      .delete(`/api/v0.01/roles/4`)
+      .delete(`/api/v0.01/countries/1000`)
       .set('Authorization', 'Bearer ' + testToken)
       .end((err, res) => {
         res.status.should.equal(404);
         res.body.status.should.eql('error');
-        res.body.message.should.include('Role', 'not found');
+        res.body.message.should.include('Country', 'not found');
         done();
       });
     });

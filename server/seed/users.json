@@ -1,23 +1,9 @@
 [
 	{
 		"id" : 1,
-		"username" : "t1",
-		"password" : "pwdtest1",
-		"email"    : "t1@gmail.com",
-		"active"   : true
-	},
-	{
-		"id" : 2,
-		"username" : "t2",
-		"password" : "pwdtest2",
-		"email"    : "t2@gmail.com",
-		"active"   : true
-	},
-	{
-		"id" : 3,
-		"username" : "t3",
-		"password" : "pwdtest3",
-		"email"    : "t3@gmail.com",
+		"username" : "rw",
+		"password" : "12345678",
+		"email"    : "rw@monex.li",
 		"active"   : true
 	}
 ]
