@@ -1,3 +1,5 @@
+const BusinessUnitsController = require('./controllers/BusinessUnitsController')
+const BusinessUnitsUsersController = require('./controllers/BusinessUnitsUsersController')
 const UsersControllerPolicy = require('./policies/UsersControllerPolicy')
 const UsersController = require('./controllers/UsersController')
 const RolesController = require('./controllers/RolesController')
@@ -150,6 +152,60 @@ module.exports = (app) => {
   app.delete('/api/v0.01/countries/:id',
     AuthenticationHelpers.verifyToken,
     CountriesController.delete)
+
+
+  /////////////////////////////////////////////
+  // business_units 
+  app.get('/api/v0.01/business_units',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.getAll)
+
+  app.get('/api/v0.01/business_units/:id',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.get)
+
+  app.post('/api/v0.01/business_units',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.insert)
+
+  app.put('/api/v0.01/business_units/:id',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.update)
+
+  app.delete('/api/v0.01/business_units',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.deleteAll)
+
+  app.delete('/api/v0.01/business_units/:id',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsController.delete)
+
+
+  /////////////////////////////////////////////
+  // business_units_users 
+  app.get('/api/v0.01/business_units_users',
+    // AuthenticationHelpers.verifyToken,
+    BusinessUnitsUsersController.get)
+
+  // app.get('/api/v0.01/business_units_users/:id',
+  //   AuthenticationHelpers.verifyToken,
+  //   RolesController.get)
+
+  app.post('/api/v0.01/business_units_users',
+    // AuthenticationHelpers.verifyToken,
+    BusinessUnitsUsersController.insert)
+
+  app.put('/api/v0.01/business_units_users/:id',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsUsersController.update)
+
+  app.delete('/api/v0.01/business_units_users',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsUsersController.deleteAll)
+
+  app.delete('/api/v0.01/business_units_users/:id',
+    AuthenticationHelpers.verifyToken,
+    BusinessUnitsUsersController.delete)
 
 
   /////////////////////////////////////////////

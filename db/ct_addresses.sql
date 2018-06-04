@@ -1,5 +1,5 @@
-drop table addrs cascade;
-create table addrs 
+drop table addresses cascade;
+create table addresses 
 (
 	id			integer primary key,
 	name		varchar(128),
@@ -9,4 +9,4 @@ create table addrs
 	country_id 	integer references countries(id),
 	active		boolean not null
 );
-grant select, insert, update on table addrs to public;
+grant select, insert, update on table addresses to public;

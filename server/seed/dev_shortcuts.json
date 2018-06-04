@@ -8,36 +8,43 @@
     ,
     {
         "id"     : 2,
-        "shortcut": "addrs",
-        "name"   : "addresses",
+        "shortcut": "le",
+        "name"   : "legal_entity",
         "active" : true
     }
     ,
     {
         "id"     : 3,
-        "shortcut": "mem",
-        "name"   : "member",
+        "shortcut": "dsc",
+        "name"   : "description",
         "active" : true
     }
     ,
     {
         "id"     : 4,
-        "shortcut": "mems",
-        "name"   : "members",
+        "shortcut": "dev",
+        "name"   : "development",
         "active" : true
     }
     ,
     {
         "id"     : 5,
-        "shortcut": "4m",
-        "name"   : "4members",
+        "shortcut": "prd",
+        "name"   : "product, production",
         "active" : true
     }
     ,
     {
         "id"     : 6,
-        "shortcut": "dsc",
-        "name"   : "description",
+        "shortcut": "bu",
+        "name"   : "business_unit",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 7,
+        "shortcut": "mem",
+        "name"   : "member",
         "active" : true
     }
 ]

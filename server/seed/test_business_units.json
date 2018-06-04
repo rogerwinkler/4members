@@ -1,0 +1,26 @@
+[
+    {
+        "id"     : 0,
+        "name"   : "sentinel",
+        "dsc"    : "sentinel business unit",
+        "active" : true
+    },
+    {
+        "id"     : 1,
+        "name"   : "TestBU1",
+        "dsc"    : "test business unit 1",
+        "active" : true
+    },
+    {
+        "id"     : 2,
+        "name"   : "TestBU2",
+        "dsc"    : "test business unit 2",
+        "active" : true
+    },
+    {
+        "id"     : 3,
+        "name"   : "TestBU3",
+        "dsc"    : "test business unit 3",
+        "active" : true
+    }
+]

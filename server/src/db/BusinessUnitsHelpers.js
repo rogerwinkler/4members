@@ -1,14 +1,12 @@
 const { Pool } = require('pg')
 const QueryBuildHelpers = require('./QueryBuildHelpers')
-const debug           = require('debug')('4members.RolesHelpers')
-const debugGetAll     = require('debug')('4members.RolesHelpers.getAll')
-const debugGet        = require('debug')('4members.RolesHelpers.get')
-// const debugFindByName = require('debug')('4members.RolesHelpers.findByName')
-// const debugFindById = require('debug')('4members.RolesHelpers.findById')
-const debugInsert     = require('debug')('4members.RolesHelpers.insert')
-const debugUpdate     = require('debug')('4members.RolesHelpers.update')
-const debugDelete     = require('debug')('4members.RolesHelpers.delete')
-const debugDeleteAll  = require('debug')('4members.RolesHelpers.deleteAll')
+const debug          = require('debug')('4members.BusinessUnitsHelpers')
+const debugGetAll    = require('debug')('4members.BusinessUnitsHelpers.getAll')
+const debugGet       = require('debug')('4members.BusinessUnitsHelpers.get')
+const debugInsert    = require('debug')('4members.BusinessUnitsHelpers.insert')
+const debugUpdate    = require('debug')('4members.BusinessUnitsHelpers.update')
+const debugDelete    = require('debug')('4members.BusinessUnitsHelpers.delete')
+const debugDeleteAll = require('debug')('4members.BusinessUnitsHelpers.deleteAll')
 
 module.exports = {
   ////////////////////////////////////////////////////////////////////
@@ -40,7 +38,7 @@ module.exports = {
   async getAll () {
     debugGetAll('INPUT: (none)')
     const pool = new Pool()
-    const text = 'SELECT * FROM roles'
+    const text = 'SELECT * FROM business_units'
     var retObj = {}    
     try {
       const { rows } = await pool.query(text)
@@ -91,7 +89,7 @@ module.exports = {
   async get (id) {
     debugGet('INPUT: id=%d', id)
     const pool = new Pool()
-    const text = 'SELECT * FROM roles where id=$1'
+    const text = 'SELECT * FROM business_units where id=$1'
     const values = [id]
     var retObj = {}    
     try {
@@ -99,9 +97,9 @@ module.exports = {
       if (rows.length === 0) {
         retObj = {
           status  : 'error',
-          code    : 1008,
-          message : 'Role not found',
-          detail  : 'Role of given id not found in table "roles"'
+          code    : 1037,
+          message : 'Business unit not found',
+          detail  : 'Business unit of given id not found in table "business_units"'
         }
       } else {
         retObj = {
@@ -126,16 +124,16 @@ module.exports = {
 
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async insert (role) {}
+  // METHOD: async insert (businessUnit) {}
   //  Inserts an object into the table.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  role:     Role object (see src/models/Role.js)
-  //    id:     [INT>0], id of object. If id is null, then
-  //            MAX(id)+1 is taken.
-  //    name:   [STRING, UNIQUE, NOT NULL] 
-  //    dsc:    [STRING], description
-  //    active: [BOOL, DEFAULTS TO TRUE]
+  //  businessUnit: Business unit object (see src/models/Business unit.js)
+  //    id:         [INT>0], id of object. If id is null, then
+  //                MAX(id)+1 is taken.
+  //    name:       [STRING, UNIQUE, NOT NULL] 
+  //    dsc:        [STRING], description
+  //    active:     [BOOL, DEFAULTS TO TRUE]
   // -----------------------------------------------------------------
   // RETURNS: The inserted object in the standard structure in the 
   //  body of the http response:
@@ -154,8 +152,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async insert (role) {
-    debugInsert('INPUT: role=%o', role)
+  async insert (businessUnit) {
+    debugInsert('INPUT: businessUnit=%o', businessUnit)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -163,7 +161,7 @@ module.exports = {
     var   retObj = {}
 
     // active defaults to true if not explicitly set to false
-    const calcActive = ((role.active != false) ? true : false)
+    const calcActive = ((businessUnit.active != false) ? true : false)
 
     // db contraints check, so we don't have to: 
     //  - data types
@@ -172,8 +170,8 @@ module.exports = {
     //  - active is not null
 
     // find next id if id is not specified
-    if (role.id === null || role.id === undefined) {
-      text = 'SELECT max(id)+1 AS nextid FROM roles'
+    if (businessUnit.id === null || businessUnit.id === undefined) {
+      text = 'SELECT max(id)+1 AS nextid FROM business_units'
       try {
         const { rows } = await pool.query(text)
         nextId = rows[0].nextid || 1
@@ -189,11 +187,11 @@ module.exports = {
         return retObj
       }
     } else {
-      nextId = role.id
+      nextId = businessUnit.id
     }
 
-    text = 'INSERT INTO roles(id, name, dsc, active) VALUES($1, $2, $3, $4) RETURNING *'
-    values = [nextId, role.name, role.dsc, calcActive]
+    text = 'INSERT INTO business_units(id, name, dsc, active) VALUES($1, $2, $3, $4) RETURNING *'
+    values = [nextId, businessUnit.name, businessUnit.dsc, calcActive]
     try {
       const { rows } = await pool.query(text, values)
       retObj = {
@@ -217,15 +215,15 @@ module.exports = {
   
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
-  // METHOD: async update (role) {}
+  // METHOD: async update (businessUnit) {}
   //  Updates the object of the given id.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  role:     Role object (see src/models/Role.js)
-  //    id:     [INT>0, NOT NULL]
-  //    name:   [STRING, UNIQUE, NOT NULL, NOT EMPTY] 
-  //    dsc:    [STRING, if UNDEFINED=>NOT_UPDATED]
-  //    active: [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
+  //  businessUnit: Business unit object (see src/models/Business unit.js)
+  //    id:         [INT>0, NOT NULL]
+  //    name:       [STRING, UNIQUE, NOT NULL, NOT EMPTY] 
+  //    dsc:        [STRING, if UNDEFINED=>NOT_UPDATED]
+  //    active:     [BOOLEAN, if UNDEFINED=>NOT_UPDATED]
   // -----------------------------------------------------------------
   // RETURNS: The updated object in the standard structure in the 
   //  body of the http response:
@@ -244,8 +242,8 @@ module.exports = {
   // -----------------------------------------------------------------
   ////////////////////////////////////////////////////////////////////  
 
-  async update (role) {
-    debugUpdate('INPUT: role=%o', role)
+  async update (businessUnit) {
+    debugUpdate('INPUT: businessUnit=%o', businessUnit)
     const pool = new Pool()
     var   text = ''
     var   values = []
@@ -259,24 +257,24 @@ module.exports = {
 
     // remove properties that are undefined
     var primeKeys = ['id']
-    values = [role.id]
+    values = [businessUnit.id]
     var properties = []
     // careful null===undefined ==> false, null==undefined ==> true
     // but null must be allowed!!!
-    if (role.name!==undefined) { 
+    if (businessUnit.name!==undefined) { 
       properties.push('name')
-      values.push(role.name)
+      values.push(businessUnit.name)
     }
-    if (role.dsc!==undefined) {
+    if (businessUnit.dsc!==undefined) {
       properties.push('dsc')
-      values.push(role.dsc)
+      values.push(businessUnit.dsc)
     }
-    if (role.active!==undefined) {
+    if (businessUnit.active!==undefined) {
       properties.push('active')
-      values.push(role.active)
+      values.push(businessUnit.active)
     }
 
-    text = QueryBuildHelpers.createUpdateStatement('roles', primeKeys, properties)
+    text = QueryBuildHelpers.createUpdateStatement('business_units', primeKeys, properties)
     debugUpdate('Query: text="%s"', text)
     debugUpdate('Query: values=%o', values)
     // update
@@ -285,9 +283,9 @@ module.exports = {
       if (rows.length === 0) { // record to update does not exist
         retObj = {
           status  : 'error',
-          code    : 1006,
-          message : 'Role of id "' + id + '" not found, id is not defined',
-          detail  : 'Record of role to be updated does not exist', 
+          code    : 1039,
+          message : 'Business unit of id "' + id + '" not found, id is not defined',
+          detail  : 'Record of businessUnit to be updated does not exist', 
         }
       } else {
         retObj = {
@@ -338,7 +336,7 @@ module.exports = {
   async delete (id) {
     debugDelete('INPUT: id=' + id)
     const pool = new Pool()
-    var   text = 'DELETE FROM roles WHERE id=$1 RETURNING *'
+    var   text = 'DELETE FROM business_units WHERE id=$1 RETURNING *'
     var   values = [id]
     var   retObj = {}
     try {
@@ -346,9 +344,9 @@ module.exports = {
       if (rows.length === 0) { // record to delete does not exist
         retObj = {
           status  : 'error',
-          code    : 1009,
-          message : 'Role of id "' + id + '" not found',
-          detail  : 'Record of role to be deleted does not exist', 
+          code    : 1038,
+          message : 'Business unit of id "' + id + '" not found',
+          detail  : 'Record of businessUnit to be deleted does not exist', 
         }
       } else {
         retObj = {
@@ -399,7 +397,7 @@ module.exports = {
   async deleteAll () {
     debugDeleteAll('INPUT: (none)')
     const pool = new Pool()
-    var   text = 'DELETE FROM roles RETURNING *'
+    var   text = 'DELETE FROM business_units RETURNING *'
     var   retObj = {}
     try {
       const { rows } = await pool.query(text)
@@ -420,104 +418,5 @@ module.exports = {
       return retObj
     }
   }
-
-
-
-
-
-  ////////////////////////////////////////////////////////////////////
-  // -----------------------------------------------------------------
-  // METHOD: async findByName(name) {}
-  //  Looks up a role of a given name in the db.
-  // -----------------------------------------------------------------
-  // PARAMS:  
-  //  name: [STRING, NOT NULL, NOT EMPTY], name of role to look up.
-  // -----------------------------------------------------------------
-  // RETURNS: 
-  //  An object with an error object and a rows array containing 
-  //  the found record. NOTE: Since name is UNIQUE only one
-  //  record should be returned. If no error occured, error is 
-  //  null. If an error occured the returned rows array is 
-  //  empty ([]).
-  //  
-  //  The structure of the returned object is:
-  //  {
-  //    error : { code, msg, dsc},
-  //    rows  : [{id, name, dsc, active}]
-  //  }
-  // -----------------------------------------------------------------
-  ////////////////////////////////////////////////////////////////////  
  
-  // async findByName (name) {
-  //   debugFindByName('INPUT: name="' + name + '"')
-  //   const pool = new Pool()
-  //   const text = 'SELECT * FROM roles WHERE name=$1'
-  //   const values = [name]
-  //   var retObj = {}    
-  //   try {
-  //     const { rows } = await pool.query(text, values)
-  //     retObj = {'error': null, 'rows': rows} 
-  //     return retObj
-  //   } catch (e) {
-  //     const error = {
-  //       'code': 'PostgreSQL-' + e.code,
-  //       'msg' : e.message,
-  //       'dsc' : e.detail
-  //     } 
-  //     retObj = {'error': error, 'rows': []}
-  //     return retObj
-  //   } finally {
-  //     debugFindByName('RETURNS: %o', retObj)
-  //     pool.end()
-  //   }
-  // },
-
-
-  ////////////////////////////////////////////////////////////////////
-  // -----------------------------------------------------------------
-  // METHOD: async findById(id) {}
-  //  Looks up a role of a given id in the db.
-  // -----------------------------------------------------------------
-  // PARAMS:  
-  //  id: [POSITIV INTEGER, NOT NULL], id of object to look up.
-  // -----------------------------------------------------------------
-  // RETURNS: 
-  //  An object with an error object and a rows array containing 
-  //  the found record. NOTE: Since id is UNIQUE just one
-  //  single record should be returned. If no error occured 
-  //  error is null. If an error occured the rows array is
-  //  empty ([]).
-  //
-  //  The structure of the returned object is:
-  //  {
-  //    error : { code, msg, dsc},
-  //    rows  : [{id, name, dsc, active}]
-  //  }
-  // -----------------------------------------------------------------
-  ////////////////////////////////////////////////////////////////////  
-
-  // async findById (id) {
-  //   debugFindById('INPUT: id=' + id)
-  //   const pool = new Pool()
-  //   const text = 'SELECT * FROM roles WHERE id=$1'
-  //   const values = [id]
-  //   var retObj = {}
-  //   try {
-  //     const { rows } = await pool.query(text, values)
-  //     retObj = {'error': null, 'rows': rows}
-  //     return retObj
-  //   } catch (e) {
-  //     const error = {
-  //       'code': 'PostgreSQL-' + e.code,
-  //       'msg' : e.message,
-  //       'dsc' : e.detail
-  //     } 
-  //     retObj = {'error': error, 'rows': []}
-  //     return retObj
-  //   } finally {
-  //     debugFindById('RETURNS: %o', retObj)
-  //     pool.end()
-  //   }
-  // }
-
 }
