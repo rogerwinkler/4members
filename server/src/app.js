@@ -13,7 +13,13 @@ if (process.env.NODE_ENV !== 'test') {
 // app.use(morgan('combined')) // use morgan log library to get logs while the server is running
 
 app.use(bodyParser.json())	// parse body of http request
-app.use(cors()) 			// allow access from 3erd party web sites
+
+var corsOptions = {
+  origin: 'http://localhost:8080',
+  credentials: true
+}
+app.use(cors(corsOptions)) 			// allow access from 3erd party web sites
+// app.options('*', cors())
 
 require('./routes')(app)
 

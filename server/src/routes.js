@@ -8,6 +8,7 @@ const DefaultController = require('./controllers/DefaultController')
 const AuthenticationHelpers = require('./db/AuthenticationHelpers')
 const DevShortcutsController = require('./controllers/DevShortcutsController')
 const CountriesController = require('./controllers/CountriesController')
+const cors = require('cors')
 
 module.exports = (app) => {
 
@@ -38,6 +39,7 @@ module.exports = (app) => {
     AuthenticationHelpers.verifyToken,
     UsersController.delete)
 
+  // app.options('/api/v0.01/register', cors()) // enable pre-flight request for DELETE request
   app.post('/api/v0.01/register', 
     UsersControllerPolicy.register,
     UsersController.register)

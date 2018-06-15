@@ -9,17 +9,36 @@ module.exports = {
       id      : Joi.number(),
       username: Joi.string().alphanum().min(2).max(30).required(),
       password: Joi.string().regex(/^[a-zA-Z0-9]{8,60}$/).required(),
+      fullname: Joi.string(),
       email   : Joi.string().email(),
       active  : Joi.boolean()
     }
     var retObj = {}
+    const objToValidate = {
+      id      : req.body.id,
+      username: req.body.username,
+      password: req.body.password,
+      fullname: req.body.fullname,
+      email   : req.body.email,
+      active  : req.body.active,
+    }
 
-    const {error, value} = Joi.validate(req.body, schema)
+    const {error, value} = Joi.validate(objToValidate, schema)
     debugRegister('error=%o', error)
     debugRegister('value=%o', value)
    
     if (error) {
       switch(error.details[0].context.key) {
+        case 'fullname':
+          retObj = {
+            status : 'error',
+            code   : 1043,
+            message: 'Full name must be of type string',
+            detail : 'Full name must be a string set up of characters'
+          }
+          debugRegister('RETURNS: sending 400.. o%', retObj)
+          return res.status(400).send(retObj)
+          // break
         case 'username':
           retObj = {
             status : 'error',

@@ -1,7 +1,9 @@
 const UsersHelpers = require('../db/UsersHelpers')
+const BusinessUnitsHelpers = require('../db/BusinessUnitsHelpers')
 const ValidationHelpers = require('../db/ValidationHelpers')
 const AuthenticationHelpers = require('../db/AuthenticationHelpers')
 const User = require('../models/User')
+const BusinessUnit = require('../models/BusinessUnit')
 const debug          = require('debug')('4members.UsersController')
 const debugGetAll    = require('debug')('4members.UsersController.getAll')
 const debugGet       = require('debug')('4members.UsersController.get')
@@ -127,7 +129,7 @@ module.exports = {
     var retObj = {}
 
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','username','password','email','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','username','password', 'fullname', 'email','active'])
     if (result1.status == 'error') {
       debugInsert('RETURNS: sending 400... %o', result1)
       return res.status(400).send(result1)
@@ -138,6 +140,7 @@ module.exports = {
       (req.body.id === undefined       ? null : req.body.id      ),
       (req.body.username === undefined ? null : req.body.username),
       (req.body.password === undefined ? null : req.body.password),
+      (req.body.fullname === undefined ? null : req.body.fullname),
       (req.body.email === undefined    ? null : req.body.email   ),
       (req.body.active === undefined   ? null : req.body.active  )
     )
@@ -206,13 +209,13 @@ module.exports = {
       return res.status(404).send(retObj)
     }
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['username','password','email','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['username','password','fullname','email','active'])
     if (result1.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result1)
       return res.status(404).send(result1)
     }
     // update
-    const user = new User(req.params.id, req.body.username, req.body.password, req.body.email, req.body.active)
+    const user = new User(req.params.id, req.body.username, req.body.password, req.body.fullname, req.body.email, req.body.active)
     const result2 = await UsersHelpers.update(user)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
@@ -313,9 +316,12 @@ module.exports = {
   // -----------------------------------------------------------------
   // PARAMS:  
   //  req: http request (receiving)
-  //    req.body.username: user's username
-  //    req.body.password: user's password
-  //    req.body.email   : user's email
+  //    req.body.organization: name of organization who's members are to be managed
+  //    req.body.fullname    : full name of registrar
+  //    req.body.email       : user's email
+  //    req.body.username    : user's username
+  //    req.body.password1   : user's password
+  //    req.body.password2   : user's repeat password to identify mistypings.
   //  res: response object (answering)        
   // -----------------------------------------------------------------
   // RETURNS: The inserted user in the standard structure in the body
@@ -337,12 +343,21 @@ module.exports = {
   async register (req, res) {
     debugRegister('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     // validate properties in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['username','password','email'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['organization','fullname','email','username','password'])
     if (result1.status == 'error') {
       debugRegister('RETURNS: sending 400... %o', result1)
       return res.status(400).send(result1)
     }
-    const user = new User(null, req.body.username, req.body.password, req.body.email, true)
+
+    // TO DO: PACK IN A TRANSACTION ENTRY IN BUSINESS_UNITS AND USERS!!!!!
+    const bu = new BusinessUnit( null, req.body.organization, null, true)
+    const result2 = await BusinessUnitsHelpers.insert(bu)
+    if (result2.status == 'error') {
+      debugRegister('RETURNS: sending 400... %o', result2)
+      return res.status(400).send(result2)
+    }
+
+    const user = new User(null, req.body.username, req.body.password, req.body.fullname, req.body.email, true)
     const result = await UsersHelpers.insert(user)
     if (result.status == 'error') {
       debugRegister('RETURNS: sending 400... %o', result)
@@ -356,6 +371,7 @@ module.exports = {
             id       : result.data[0].id,
             username : result.data[0].username,
             password : result.data[0].password,
+            fullname : result.data[0].fullname,
             email    : result.data[0].email,
             active   : result.data[0].active
           },
@@ -425,7 +441,7 @@ module.exports = {
       debugLogin('RETURNS: sending 404... %o', retObj)
       return res.status(404).send(retObj)
     } 
-    const user = new User(null, req.body.username, req.body.password, null, null)
+    const user = new User(null, req.body.username, req.body.password, null, null, null)
     const result = await UsersHelpers.login(user)
     if (result.status == 'error') {
       debugLogin('RETURNS: sending 404... %o', result)

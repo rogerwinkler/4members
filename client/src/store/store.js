@@ -10,11 +10,15 @@ export default new Vuex.Store({
   //   createPersistedState()
   // ],
   state: {
+    appState: null,
     token: null,
     user: null,
     isUserLoggedIn: false
   },
   mutations: {
+    setAppState (state, appState) {
+      state.appState = appState
+    },
     setToken (state, token) {
       state.token = token
       state.isUserLoggedIn = !!(token)
@@ -24,6 +28,9 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    setAppState ({commit}, appState) {
+      commit('setAppState', appState)
+    },
     setToken ({commit}, token) {
       commit('setToken', token)
     },

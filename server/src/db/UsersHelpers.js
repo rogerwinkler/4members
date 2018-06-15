@@ -194,8 +194,8 @@ module.exports = {
       nextId = user.id
     }
 
-    text = 'INSERT INTO users(id, username, password, email, active) VALUES($1, $2, $3, $4, $5) RETURNING *'
-    values = [nextId, user.username, AuthenticationHelpers.hashPassword(user.password), user.email, calcActive]
+    text = 'INSERT INTO users(id, username, password, fullname, email, active) VALUES($1, $2, $3, $4, $5, $6) RETURNING *'
+    values = [nextId, user.username, AuthenticationHelpers.hashPassword(user.password), user.fullname, user.email, calcActive]
     try {
       const { rows } = await pool.query(text, values)
       retObj = {
@@ -272,6 +272,10 @@ module.exports = {
     if (user.password!==undefined) {
       properties.push('password')
       values.push(AuthenticationHelpers.hashPassword(user.password))
+    }
+    if (user.fullname!==undefined) {
+      properties.push('fullname')
+      values.push(user.fullname)
     }
     if (user.email!==undefined) {
       properties.push('email')
@@ -486,6 +490,7 @@ module.exports = {
               id       : result.rows[0].id,
               username : result.rows[0].username,
               password : result.rows[0].password,
+              fullname : result.rows[0].fullname,
               email    : result.rows[0].email,
               active   : result.rows[0].active
             },

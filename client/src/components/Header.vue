@@ -1,5 +1,6 @@
 <template>
-	<v-toolbar fixed class="teal" dark>
+	<v-toolbar fixed dark color="primary">
+	    <v-toolbar-side-icon></v-toolbar-side-icon>
 		<v-toolbar-title class="mr-4">
 				<!-- @click="navigateTo({name: 'root'})"> -->
 			<span
