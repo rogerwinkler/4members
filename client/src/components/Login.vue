@@ -54,6 +54,9 @@ export default {
       error: null
     }
   },
+  created: function () {
+    this.$store.dispatch('setAppState', 'login')
+  },
   components: {
     MemMain
   }

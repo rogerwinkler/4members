@@ -138,6 +138,9 @@ export default {
       }
     }
   },
+  created: function () {
+    this.$store.dispatch('setAppState', 'register')
+  },
   methods: {
     validate () {
       // console.log('validate()')
@@ -196,11 +199,18 @@ export default {
         if (response.status === 'error') {
           console.log('response.message=', response.message)
           this.errMsg = response.message
+          this.alert = true
           return
         }
+        this.alert = false
         console.log('response.data=', JSON.stringify(response.data))
-        this.$store.dispatch('setToken', response.data.token)
-        this.$store.dispatch('setUser', response.data.user)
+        this.$store.dispatch('setToken', response.data.data[0].token)
+        this.$store.dispatch('setUser', response.data.data[0].user)
+        this.$store.dispatch('setIsUserLoggedIn', true)
+        console.log('this.$store.state=', JSON.stringify(this.$store.state))
+        // Navigate to UserMain.vue
+        this.$store.dispatch('setAppState', 'main')
+        this.$router.push('main')
       } catch (error) {
         if (error.response === undefined) {
           this.errMsg = error.message

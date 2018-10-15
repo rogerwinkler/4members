@@ -1,14 +1,14 @@
-const DevShortcutsHelpers = require('../db/DevShortcutsHelpers')
+const AbbreviationsHelpers = require('../db/AbbreviationsHelpers')
 const ValidationHelpers   = require('../db/ValidationHelpers')
-const DevShortcut         = require('../models/DevShortcut')
+const Abbreviation         = require('../models/Abbreviation')
 
-const debug          = require('debug')('4members.DevShortcutsController')
-const debugGetAll    = require('debug')('4members.DevShortcutsController.getAll')
-const debugGet       = require('debug')('4members.DevShortcutsController.get')
-const debugInsert    = require('debug')('4members.DevShortcutsController.insert')
-const debugUpdate    = require('debug')('4members.DevShortcutsController.update')
-const debugDelete    = require('debug')('4members.DevShortcutsController.delete')
-const debugDeleteAll = require('debug')('4members.DevShortcutsController.deleteAll')
+const debug          = require('debug')('4members.AbbreviationsController')
+const debugGetAll    = require('debug')('4members.AbbreviationsController.getAll')
+const debugGet       = require('debug')('4members.AbbreviationsController.get')
+const debugInsert    = require('debug')('4members.AbbreviationsController.insert')
+const debugUpdate    = require('debug')('4members.AbbreviationsController.update')
+const debugDelete    = require('debug')('4members.AbbreviationsController.delete')
+const debugDeleteAll = require('debug')('4members.AbbreviationsController.deleteAll')
 
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
     debugGetAll('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
     var retObj = {}
      // select
-    const result = await DevShortcutsHelpers.getAll()
+    const result = await AbbreviationsHelpers.getAll()
     if (result.status=='error') {
       debugGetAll('RETURNS: sending 400... %o', result)
       return res.status(400).send(result)
@@ -83,7 +83,7 @@ module.exports = {
 
   async get (req, res) {
     debugGet('INPUT: req.params=%o, req.body=%o, req.query=%o', req.params, req.body, req.query)
-    const result = await DevShortcutsHelpers.get(req.params.id)
+    const result = await AbbreviationsHelpers.get(req.params.id)
     if (result.status==='error') {
       debugGet('RETURNS: sending 404... %o', result)
       return res.status(404).send(result)
@@ -126,22 +126,22 @@ module.exports = {
     var retObj = {}
 
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','shortcut','name','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['id','abbr','name','active'])
     if (result1.status == 'error') {
       debugInsert('RETURNS: sending 400... %o', result1)
       return res.status(400).send(result1)
     }
 
     // check which properties of query object are provided and set accordingly
-    const devShortcut = new DevShortcut (
+    const Abbreviation = new Abbreviation (
       (req.body.id        === undefined  ? null : req.body.id       ),
-      (req.body.shortcut  === undefined  ? null : req.body.shortcut ),
+      (req.body.abbr  === undefined  ? null : req.body.abbr ),
       (req.body.name      === undefined  ? null : req.body.name     ),
       (req.body.active    === undefined  ? null : req.body.active   )
     )
 
     // insert
-    const result2 = await DevShortcutsHelpers.insert(devShortcut)
+    const result2 = await AbbreviationsHelpers.insert(Abbreviation)
     if (result2.status === 'error') {
       debugInsert('RETURNS: sending 400... %o', result2)
       return res.status(400).send(result2)
@@ -204,14 +204,14 @@ module.exports = {
       return res.status(404).send(retObj)
     }
     // validate properties of query object in req.body
-    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['shortcut','name','active'])
+    const result1 = ValidationHelpers.checkObjectHasOnlyValidProperties(req.body, ['abbr','name','active'])
     if (result1.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result1)
       return res.status(404).send(result1)
     }
     // update
-    const devShortcut = new DevShortcut(req.params.id, req.body.shortcut, req.body.name, req.body.active)
-    const result2 = await DevShortcutsHelpers.update(devShortcut)
+    const Abbreviation = new Abbreviation(req.params.id, req.body.abbr, req.body.name, req.body.active)
+    const result2 = await AbbreviationsHelpers.update(Abbreviation)
     if (result2.status == 'error') {
       debugUpdate('RETURNS: sending 404... %o', result2)
       return res.status(404).send(result2)
@@ -293,7 +293,7 @@ module.exports = {
       debugUpdate('RETURNS: sending 404... %o', retObj)
       return res.status(404).send(retObj)
     }
-    const result = await DevShortcutsHelpers.delete(req.params.id)
+    const result = await AbbreviationsHelpers.delete(req.params.id)
     if (result.status == 'error') {
       debugDelete('RETURNS: sending 404... %o', result)
       return res.status(404).send(result)

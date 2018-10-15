@@ -12,7 +12,12 @@ export default new Vuex.Store({
   state: {
     appState: null,
     token: null,
-    user: null,
+    userId: null,
+    username: null,
+    fullname: null,
+    email: null,
+    buId: null,
+    buName: null,
     isUserLoggedIn: false
   },
   mutations: {
@@ -23,8 +28,17 @@ export default new Vuex.Store({
       state.token = token
       state.isUserLoggedIn = !!(token)
     },
-    setUser (state, user) {
-      state.user = user
+    setUser (state, payload) {
+      console.log('payload=', JSON.stringify(payload))
+      state.userId = payload.user_id
+      state.username = payload.username
+      state.fullname = payload.fullname
+      state.email = payload.email
+      state.buId = payload.bu_id
+      state.buName = payload.bu_name
+    },
+    setIsUserLoggedIn (state, loginStatus) {
+      state.isUserLoggedIn = loginStatus
     }
   },
   actions: {
@@ -34,8 +48,12 @@ export default new Vuex.Store({
     setToken ({commit}, token) {
       commit('setToken', token)
     },
-    setUser ({commit}, user) {
-      commit('setUser', user)
+    setUser ({commit}, payload) {
+      console.log('setUser payload=', JSON.stringify(payload))
+      commit('setUser', payload)
+    },
+    setIsUserLoggedIn ({commit}, loginStatus) {
+      commit('setIsUserLoggedIn', loginStatus)
     }
   }
 })

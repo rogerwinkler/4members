@@ -4,6 +4,7 @@ import Welcome from '@/components/Welcome'
 import Register from '@/components/Register'
 import Login from '@/components/Login'
 import MemMain from '@/components/MemMain'
+import Main from '@/components/Main'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/main',
+      name: 'main',
+      component: Main
     }
   ]
 })

@@ -1,42 +1,42 @@
 [
     {
         "id"     : 1,
-        "shortcut": "addr",
+        "abbr"   : "addr",
         "name"   : "address",
         "active" : true
     }
     ,
     {
         "id"     : 2,
-        "shortcut": "addrs",
+        "abbr"   : "addrs",
         "name"   : "addresses",
         "active" : true
     }
     ,
     {
         "id"     : 3,
-        "shortcut": "mem",
+        "abbr"   : "mem",
         "name"   : "member",
         "active" : true
     }
     ,
     {
         "id"     : 4,
-        "shortcut": "mems",
+        "abbr"   : "mems",
         "name"   : "members",
         "active" : true
     }
     ,
     {
         "id"     : 5,
-        "shortcut": "4m",
+        "abbr"   : "4m",
         "name"   : "4members",
         "active" : true
     }
     ,
     {
         "id"     : 6,
-        "shortcut": "dsc",
+        "abbr"   : "dsc",
         "name"   : "description",
         "active" : true
     }

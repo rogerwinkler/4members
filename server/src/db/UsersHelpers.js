@@ -1,6 +1,7 @@
 const { Pool } = require('pg')
 const QueryBuildHelpers = require('./QueryBuildHelpers')
 const AuthenticationHelpers = require('./AuthenticationHelpers')
+const TxHelpers = require('./TxHelpers')
 const debug = require('debug')('4members.UsersHelpers')
 const debugGetAll = require('debug')('4members.UsersHelpers.getAll')
 const debugGet = require('debug')('4members.UsersHelpers.get')
@@ -9,6 +10,7 @@ const debugUpdate = require('debug')('4members.UsersHelpers.update')
 const debugDelete = require('debug')('4members.UsersHelpers.delete')
 const debugDeleteAll = require('debug')('4members.UsersHelpers.deleteAll')
 const debugLogin = require('debug')('4members.UsersHelpers.login')
+const debugRegister = require('debug')('4members.UsersHelpers.register')
 
 
 module.exports = {
@@ -435,13 +437,13 @@ module.exports = {
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
   // METHOD:  async login(user) {}
-  //  Deletes all objects of a table.
+  //  Logs the user in.
   // -----------------------------------------------------------------
   // PARAMS:  
-  //  (none)
+  //  user  The user's credentials: username and password
   // -----------------------------------------------------------------
-  // RETURNS: The deleted objects in the standard structure in the 
-  //  body of the http response:
+  // RETURNS: The user and bu objects of the logged in user in the 
+  //  standard structure in the body of the http response:
   //
   //  in case of success:             in case of an error:
   //
@@ -526,6 +528,101 @@ module.exports = {
       debugLogin('RETURNS: %o', retObj)
       return retObj
     }
+  },
+
+  ////////////////////////////////////////////////////////////////////
+  // -----------------------------------------------------------------
+  // METHOD:  async register (bu, user) {}
+  //  Registrates a new organization (bu) and the registrating user.
+  // -----------------------------------------------------------------
+  // PARAMS:  
+  //  bu    business unit
+  //  user  user 
+  // -----------------------------------------------------------------
+  // RETURNS: The registrated objects as one object (user) in the 
+  //  standard structure in the body of the http response:
+  //
+  //  in case of success:             in case of an error:
+  //
+  //    {                             {
+  //      status : "success",           status : "error",
+  //      data   : [{obj1}, ...]        code:  : "an error code..."
+  //    }                               message: "an error message..."
+  //                                    detail : "detailed error message"
+  //                                  }
+  //  
+  //  ...where in case of an error, "status" and "message" are required,
+  //  and "code" and "detail" are optional.
+  // -----------------------------------------------------------------
+  ////////////////////////////////////////////////////////////////////  
+
+  async register (bu, user) {
+    debugRegister('INPUT: bu=%o, user=%o', bu, user)
+
+    // db contraints check on business_units, so we don't have to: 
+    //  - data types
+    //  - id is unique
+    //  - name is unique and not null, 
+    //  - active is not null
+
+    // db contraints check on users, so we don't have to: 
+    //  - data types
+    //  - id is unique
+    //  - username is unique and not null, 
+    //  - active is not null
+
+    // insert bu and user in a single db transaction
+    const result = await TxHelpers.dbTransaction(async client => {
+      var   text = ''
+      var   values = []
+      var   BUnextId = null
+      var   userNextId = null
+      var   retObj = {}
+      // active defaults to true if not explicitly set to false
+      const BUcalcActive = ((bu.active != false) ? true : false)
+      const calcActive = ((user.active != false) ? true : false)
+
+      // find next id if bu.id is not specified
+      if (bu.id === null || bu.id === undefined) {
+        text = 'SELECT max(id)+1 AS nextid FROM business_units'
+        const { rows } = await client.query(text)
+        BUnextId = (rows[0].nextid || 1)
+      } else {
+        BUnextId = bu.id
+      }
+      text = 'INSERT INTO business_units(id, name, dsc, active) VALUES($1, $2, $3, $4) RETURNING *'
+      values = [BUnextId, bu.name, bu.dsc, BUcalcActive]
+      const { rows } = await client.query(text, values)
+      retObj = {
+        status: 'success',
+        data  : {
+          bu_id  : rows[0].id,
+          bu_name: rows[0].name
+        }
+      }
+
+      //find next id if user.id is not specified
+      if (user.id === null || user.id === undefined) {
+        text = 'SELECT max(id)+1 AS nextid FROM users'
+        const { rows } = await client.query(text)
+        userNextId = (rows[0].nextid || 1)
+      } else {
+        userNextId = user.id
+      }
+      text = 'INSERT INTO users(bu_id, id, username, password, fullname, email, active) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *'
+      console.log('text=', text)
+      values = [BUnextId, userNextId, user.username, AuthenticationHelpers.hashPassword(user.password), user.fullname, user.email, calcActive]
+      const result2 = await client.query(text, values)
+      retObj.data.user_id  = result2.rows[0].id
+      retObj.data.username = result2.rows[0].username
+      retObj.data.password = result2.rows[0].password
+      retObj.data.fullname = result2.rows[0].fullname
+      retObj.data.email    = result2.rows[0].email
+      return retObj
+    })
+
+    debugRegister('RETURNS: %o', result)
+    return result
   }
 
 }

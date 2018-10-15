@@ -348,17 +348,9 @@ module.exports = {
       debugRegister('RETURNS: sending 400... %o', result1)
       return res.status(400).send(result1)
     }
-
-    // TO DO: PACK IN A TRANSACTION ENTRY IN BUSINESS_UNITS AND USERS!!!!!
     const bu = new BusinessUnit( null, req.body.organization, null, true)
-    const result2 = await BusinessUnitsHelpers.insert(bu)
-    if (result2.status == 'error') {
-      debugRegister('RETURNS: sending 400... %o', result2)
-      return res.status(400).send(result2)
-    }
-
-    const user = new User(null, req.body.username, req.body.password, req.body.fullname, req.body.email, true)
-    const result = await UsersHelpers.insert(user)
+    const user = new User(null, null, req.body.username, req.body.password, req.body.fullname, req.body.email, true)
+    const result = await UsersHelpers.register(bu, user)
     if (result.status == 'error') {
       debugRegister('RETURNS: sending 400... %o', result)
       return res.status(400).send(result)
@@ -368,17 +360,18 @@ module.exports = {
         status : "success",
         data   : [{
           user : {
-            id       : result.data[0].id,
-            username : result.data[0].username,
-            password : result.data[0].password,
-            fullname : result.data[0].fullname,
-            email    : result.data[0].email,
-            active   : result.data[0].active
+            user_id  : result.data.user_id,
+            username : result.data.username,
+            password : result.data.password,
+            fullname : result.data.fullname,
+            email    : result.data.email,
+            bu_id    : result.data.bu_id,
+            bu_name  : result.data.bu_name
           },
           token : AuthenticationHelpers.jwtSignUser({
             user: {
-              id       : result.data[0].id,
-              username : result.data[0].username
+              id       : result.data.user_id,
+              username : result.data.username
             }
           })
         }]
@@ -392,7 +385,7 @@ module.exports = {
   ////////////////////////////////////////////////////////////////////
   // -----------------------------------------------------------------
   // METHOD: async login (req, res) {}
-  //  Logs a  user in
+  //  Logs a user in
   // -----------------------------------------------------------------
   // PARAMS:  
   //  req: http request (receiving)

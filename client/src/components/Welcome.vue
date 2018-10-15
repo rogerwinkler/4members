@@ -226,7 +226,6 @@ export default {
   methods: {
     async main () {
       // this.error = null
-      this.$store.dispatch('setAppState', 'login')
       this.$router.push('login')
     }
   }

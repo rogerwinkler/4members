@@ -1,50 +1,57 @@
 [
     {
         "id"     : 1,
-        "shortcut": "addr",
+        "abbr": "addr",
         "name"   : "address",
         "active" : true
     }
     ,
     {
         "id"     : 2,
-        "shortcut": "le",
+        "abbr"   : "le",
         "name"   : "legal_entity",
         "active" : true
     }
     ,
     {
         "id"     : 3,
-        "shortcut": "dsc",
+        "abbr"   : "dsc",
         "name"   : "description",
         "active" : true
     }
     ,
     {
         "id"     : 4,
-        "shortcut": "dev",
+        "abbr"   : "dev",
         "name"   : "development",
         "active" : true
     }
     ,
     {
         "id"     : 5,
-        "shortcut": "prd",
+        "abbr"   : "prd",
         "name"   : "product, production",
         "active" : true
     }
     ,
     {
         "id"     : 6,
-        "shortcut": "bu",
+        "abbr"   : "bu",
         "name"   : "business_unit",
         "active" : true
     }
     ,
     {
         "id"     : 7,
-        "shortcut": "mem",
+        "abbr"   : "mem",
         "name"   : "member",
+        "active" : true
+    }
+    ,
+    {
+        "id"     : 8,
+        "abbr"   : "abbr",
+        "name"   : "abbreviation",
         "active" : true
     }
 ]

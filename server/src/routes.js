@@ -6,7 +6,7 @@ const RolesController = require('./controllers/RolesController')
 const AccessCodesController = require('./controllers/AccessCodesController')
 const DefaultController = require('./controllers/DefaultController')
 const AuthenticationHelpers = require('./db/AuthenticationHelpers')
-const DevShortcutsController = require('./controllers/DevShortcutsController')
+const AbbreviationsController = require('./controllers/AbbreviationsController')
 const CountriesController = require('./controllers/CountriesController')
 const cors = require('cors')
 
@@ -41,7 +41,7 @@ module.exports = (app) => {
 
   // app.options('/api/v0.01/register', cors()) // enable pre-flight request for DELETE request
   app.post('/api/v0.01/register', 
-    UsersControllerPolicy.register,
+    // UsersControllerPolicy.register,
     UsersController.register)
   
   app.post('/api/v0.01/login', 
@@ -103,30 +103,30 @@ module.exports = (app) => {
 
 
   /////////////////////////////////////////////
-  // dev_shortcuts 
-  app.get('/api/v0.01/dev_shortcuts',
+  // abbreviations 
+  app.get('/api/v0.01/abbreviations',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.getAll)
+    AbbreviationsController.getAll)
 
-  app.get('/api/v0.01/dev_shortcuts/:id',
+  app.get('/api/v0.01/abbreviations/:id',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.get)
+    AbbreviationsController.get)
 
-  app.post('/api/v0.01/dev_shortcuts',
+  app.post('/api/v0.01/abbreviations',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.insert)
+    AbbreviationsController.insert)
 
-  app.put('/api/v0.01/dev_shortcuts/:id',
+  app.put('/api/v0.01/abbreviations/:id',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.update)
+    AbbreviationsController.update)
 
-  app.delete('/api/v0.01/dev_shortcuts',
+  app.delete('/api/v0.01/abbreviations',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.deleteAll)
+    AbbreviationsController.deleteAll)
 
-  app.delete('/api/v0.01/dev_shortcuts/:id',
+  app.delete('/api/v0.01/abbreviations/:id',
     AuthenticationHelpers.verifyToken,
-    DevShortcutsController.delete)
+    AbbreviationsController.delete)
 
 
   /////////////////////////////////////////////

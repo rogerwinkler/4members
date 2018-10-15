@@ -2,7 +2,7 @@
    dependable order */
 
 /* developemnt */
-\i ct_dev_shortcuts.sql
+\i ct_abbreviations.sql
 /* general */
 \i ct_business_units.sql
 /* user management */
@@ -11,7 +11,6 @@
 \i ct_roles_access_codes.sql
 \i ct_users.sql
 \i ct_users_roles.sql
-\i ct_business_units_users.sql
 /* address management */
 \i ct_countries.sql
 \i ct_addr_types.sql
